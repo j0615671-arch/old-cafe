@@ -16,7 +16,10 @@ function render() {
           (i) => `
         <div class="order-item">
           <img class="order-item__emoji" src="${i.image}" alt="${i.name}" />
-          <span>${i.name} x${i.qty}</span>
+          <div>
+            <div>${i.name} x${i.qty}</div>
+            ${formatOptions(i.options) ? `<div class="order-item__options">${formatOptions(i.options)}</div>` : ''}
+          </div>
           <span class="order-item__price">${formatPrice(i.price * i.qty)}</span>
         </div>`
         )

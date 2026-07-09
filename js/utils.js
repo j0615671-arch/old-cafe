@@ -54,6 +54,24 @@ function deleteMenu(id) {
   saveMenus(getMenus().filter((m) => m.id !== id));
 }
 
+// ── 메뉴 옵션 (사이즈/온도/샷/시럽) ─────────────────
+function getUnitPrice(menu, options = {}) {
+  let price = menu.price;
+  if (options.size) price += SIZE_OPTIONS.find((s) => s.id === options.size)?.priceDelta || 0;
+  if (options.shot) price += SHOT_PRICE;
+  if (options.syrup) price += SYRUP_PRICE;
+  return price;
+}
+function formatOptions(options) {
+  if (!options) return '';
+  const parts = [];
+  if (options.size) parts.push(SIZE_OPTIONS.find((s) => s.id === options.size)?.name);
+  if (options.temperature) parts.push(TEMPERATURE_OPTIONS.find((t) => t.id === options.temperature)?.name);
+  if (options.shot) parts.push('샷 추가');
+  if (options.syrup) parts.push('시럽 추가');
+  return parts.filter(Boolean).join(' · ');
+}
+
 // ── 장바구니 ──────────────────────────────────────
 function getCart() {
   return JSON.parse(localStorage.getItem(STORAGE_KEYS.CART)) || [];
@@ -61,25 +79,26 @@ function getCart() {
 function saveCart(cart) {
   localStorage.setItem(STORAGE_KEYS.CART, JSON.stringify(cart));
 }
-function addToCart(menuId, qty = 1) {
+function addToCart(menuId, qty = 1, options = {}) {
   const cart = getCart();
-  const item = cart.find((c) => c.menuId === menuId);
+  const key = JSON.stringify(options);
+  const item = cart.find((c) => c.menuId === menuId && JSON.stringify(c.options) === key);
   if (item) item.qty += qty;
-  else cart.push({ menuId, qty });
+  else cart.push({ lineId: generateId(), menuId, qty, options });
   saveCart(cart);
 }
-function updateCartQty(menuId, qty) {
+function updateCartQty(lineId, qty) {
   let cart = getCart();
   if (qty <= 0) {
-    cart = cart.filter((c) => c.menuId !== menuId);
+    cart = cart.filter((c) => c.lineId !== lineId);
   } else {
-    const item = cart.find((c) => c.menuId === menuId);
+    const item = cart.find((c) => c.lineId === lineId);
     if (item) item.qty = qty;
   }
   saveCart(cart);
 }
-function removeFromCart(menuId) {
-  saveCart(getCart().filter((c) => c.menuId !== menuId));
+function removeFromCart(lineId) {
+  saveCart(getCart().filter((c) => c.lineId !== lineId));
 }
 function clearCart() {
   saveCart([]);
@@ -91,12 +110,12 @@ function getCartDetailed() {
   return getCart()
     .map((c) => {
       const menu = getMenuById(c.menuId);
-      return menu ? { ...c, menu } : null;
+      return menu ? { ...c, menu, unitPrice: getUnitPrice(menu, c.options) } : null;
     })
     .filter(Boolean);
 }
 function getCartTotal() {
-  return getCartDetailed().reduce((sum, c) => sum + c.menu.price * c.qty, 0);
+  return getCartDetailed().reduce((sum, c) => sum + c.unitPrice * c.qty, 0);
 }
 
 // ── 주문 ──────────────────────────────────────────
@@ -114,8 +133,9 @@ function createOrder() {
     menuId: c.menuId,
     name: c.menu.name,
     image: c.menu.image,
-    price: c.menu.price,
+    price: c.unitPrice,
     qty: c.qty,
+    options: c.options,
   }));
   if (!items.length) return null;
   const order = {

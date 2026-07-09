@@ -12,11 +12,12 @@ function render() {
   itemsEl.innerHTML = items
     .map(
       (c) => `
-    <div class="card cart-item" data-id="${c.menuId}">
+    <div class="card cart-item" data-line-id="${c.lineId}">
       <div class="cart-item__emoji"><img src="${c.menu.image}" alt="${c.menu.name}" /></div>
       <div class="cart-item__body">
         <div class="cart-item__name">${c.menu.name}</div>
-        <div class="cart-item__price">${formatPrice(c.menu.price)}</div>
+        ${formatOptions(c.options) ? `<div class="cart-item__options">${formatOptions(c.options)}</div>` : ''}
+        <div class="cart-item__price">${formatPrice(c.unitPrice)}</div>
         <div class="cart-item__qty">
           <button data-minus>−</button>
           <span>${c.qty}</span>
@@ -47,11 +48,11 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('cartItems').addEventListener('click', (e) => {
     const item = e.target.closest('.cart-item');
     if (!item) return;
-    const menuId = item.dataset.id;
-    const current = getCart().find((c) => c.menuId === menuId);
-    if (e.target.closest('[data-plus]')) updateCartQty(menuId, current.qty + 1);
-    else if (e.target.closest('[data-minus]')) updateCartQty(menuId, current.qty - 1);
-    else if (e.target.closest('[data-remove]')) removeFromCart(menuId);
+    const lineId = item.dataset.lineId;
+    const current = getCart().find((c) => c.lineId === lineId);
+    if (e.target.closest('[data-plus]')) updateCartQty(lineId, current.qty + 1);
+    else if (e.target.closest('[data-minus]')) updateCartQty(lineId, current.qty - 1);
+    else if (e.target.closest('[data-remove]')) removeFromCart(lineId);
     else return;
     renderCartBadge();
     render();

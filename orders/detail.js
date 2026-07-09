@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <img class="order-item__emoji" src="${i.image}" alt="${i.name}" />
           <div>
             <div class="order-item__name">${i.name}</div>
+            ${formatOptions(i.options) ? `<div class="order-item__options">${formatOptions(i.options)}</div>` : ''}
             <div class="order-item__qty">${i.qty}개</div>
           </div>
           <span class="order-item__price">${formatPrice(i.price * i.qty)}</span>

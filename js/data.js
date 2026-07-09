@@ -25,3 +25,22 @@ const DEFAULT_MENUS = [
 
 const ORDER_STATUSES = ['접수완료', '제조중', '제조완료', '픽업완료'];
 
+// 카테고리별로 어떤 주문 옵션을 보여줄지 (디저트는 옵션 없음)
+const MENU_OPTIONS = {
+  coffee: { size: true, temperature: true, shot: true, syrup: true },
+  tea: { size: true, temperature: true },
+  ade: { size: true },
+};
+
+const SIZE_OPTIONS = [
+  { id: 'tall', name: '톨', priceDelta: 0 },
+  { id: 'medium', name: '미디움', priceDelta: 500 },
+  { id: 'large', name: '라지', priceDelta: 1000 },
+];
+const TEMPERATURE_OPTIONS = [
+  { id: 'hot', name: 'HOT' },
+  { id: 'ice', name: 'ICE' },
+];
+const SHOT_PRICE = 500;
+const SYRUP_PRICE = 500;
+
