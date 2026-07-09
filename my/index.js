@@ -12,4 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="stat-box__label">누적 결제 금액</div>
     </div>
   `;
+
+  const cartCount = getCartCount();
+  if (cartCount > 0) document.getElementById('cartCount').textContent = cartCount;
+  if (orders.length > 0) document.getElementById('orderCount').textContent = orders.length;
 });
