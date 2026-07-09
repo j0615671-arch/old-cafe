@@ -25,6 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   container.addEventListener('click', (e) => {
     const row = e.target.closest('.order-row');
-    if (row) location.href = `detail.html?id=${row.dataset.id}`;
+    if (row) location.href = `detail?id=${row.dataset.id}`;
   });
 });

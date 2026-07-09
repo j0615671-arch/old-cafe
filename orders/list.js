@@ -23,6 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   container.addEventListener('click', (e) => {
     const card = e.target.closest('.order-card');
-    if (card) location.href = `detail.html?id=${card.dataset.id}`;
+    if (card) location.href = `detail?id=${card.dataset.id}`;
   });
 });

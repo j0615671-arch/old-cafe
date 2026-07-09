@@ -27,6 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
       description: form.description.value.trim(),
       soldOut: form.soldOut.checked,
     });
-    location.href = `detail.html?id=${menu.id}`;
+    location.href = `detail?id=${menu.id}`;
   });
 });

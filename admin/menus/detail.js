@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="detail-card__price">${formatPrice(menu.price)}</div>
       <p class="detail-card__desc">${menu.description}</p>
       <div class="detail-card__actions">
-        <a href="edit.html?id=${menu.id}" class="btn btn-secondary">수정</a>
+        <a href="edit?id=${menu.id}" class="btn btn-secondary">수정</a>
         <button id="deleteBtn" class="btn btn-danger">삭제</button>
       </div>
     </div>

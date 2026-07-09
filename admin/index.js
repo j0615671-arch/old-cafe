@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ? recent
         .map(
           (o) => `
-      <a class="card order-row" href="orders/detail.html?id=${o.id}">
+      <a class="card order-row" href="orders/detail?id=${o.id}">
         <div>
           <div>${o.items.map((i) => i.name).join(', ')}</div>
           <div class="order-row__meta">${formatDate(o.createdAt)}</div>

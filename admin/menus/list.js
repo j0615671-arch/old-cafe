@@ -22,7 +22,7 @@ function renderMenuList() {
       </div>
       <div class="menu-item__price">${formatPrice(m.price)}</div>
       <div class="menu-item__actions">
-        <a class="btn btn-secondary btn-sm" href="edit.html?id=${m.id}">수정</a>
+        <a class="btn btn-secondary btn-sm" href="edit?id=${m.id}">수정</a>
         <button class="btn btn-danger btn-sm" data-delete="${m.id}">삭제</button>
       </div>
     </div>`
@@ -45,6 +45,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (e.target.closest('a')) return;
     const item = e.target.closest('.menu-item');
-    if (item) location.href = `detail.html?id=${item.dataset.id}`;
+    if (item) location.href = `detail?id=${item.dataset.id}`;
   });
 });

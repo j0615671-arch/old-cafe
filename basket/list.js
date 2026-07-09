@@ -38,7 +38,7 @@ function render() {
 
   document.getElementById('orderBtn').addEventListener('click', () => {
     const order = createOrder();
-    if (order) location.href = `../orders/detail.html?id=${order.id}`;
+    if (order) location.href = `../orders/detail?id=${order.id}`;
   });
 }
 
