@@ -38,6 +38,30 @@ ul, ol { list-style: none; }
   --space-6: 32px;
 
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Pretendard", "Apple SD Gothic Neo", sans-serif;
+
+  /* 관리자 사이드바는 테마와 무관하게 항상 고정 다크 톤 */
+  --color-sidebar-bg: #3d2b1f;
+  --color-sidebar-text: #f3e9dc;
+  --color-sidebar-link: #d9b99b;
+}
+
+:root[data-theme="dark"] {
+  --color-bg: #1c1512;
+  --color-surface: #2a211b;
+  --color-surface-glass: rgba(42, 33, 27, 0.65);
+  --color-border: #423227;
+  --color-brown-900: #f3e9dc;
+  --color-brown-700: #d9b99b;
+  --color-brown-500: #c69a72;
+  --color-brown-300: #6f4e37;
+  --color-cream: #3d2f24;
+  --color-text: #f3e9dc;
+  --color-text-muted: #b0a08d;
+  --color-danger: #e2694f;
+  --color-success: #6fbf7f;
+  --color-warning: #e0a94a;
+  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 body {
@@ -79,6 +103,19 @@ body {
 }
 .topbar__actions { display: flex; align-items: center; gap: var(--space-3); }
 .topbar__cart { position: relative; font-size: 1.2rem; }
+.theme-toggle {
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  border-radius: 999px;
+  width: 32px;
+  height: 32px;
+  font-size: 1rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.admin-sidebar .theme-toggle { border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.08); color: var(--color-sidebar-text); flex-shrink: 0; }
 .topbar__cart-count {
   position: absolute;
   top: -6px;
@@ -190,8 +227,8 @@ body {
 .admin-sidebar {
   width: 200px;
   flex-shrink: 0;
-  background: var(--color-brown-900);
-  color: var(--color-cream);
+  background: var(--color-sidebar-bg);
+  color: var(--color-sidebar-text);
   padding: var(--space-5) var(--space-4);
 }
 .admin-sidebar__title { font-weight: 800; font-size: 1.1rem; margin-bottom: var(--space-5); }
@@ -200,7 +237,7 @@ body {
   padding: var(--space-2) var(--space-2);
   border-radius: var(--radius-sm);
   font-size: 0.9rem;
-  color: var(--color-brown-300);
+  color: var(--color-sidebar-link);
 }
 .admin-sidebar a.is-active, .admin-sidebar a:hover { background: rgba(255,255,255,0.08); color: #fff; }
 .admin-main { flex: 1; padding: var(--space-5); max-width: 960px; }

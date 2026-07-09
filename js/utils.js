@@ -148,4 +148,35 @@ function renderCartBadge() {
   el.textContent = count;
   el.style.display = count > 0 ? '' : 'none';
 }
-document.addEventListener('DOMContentLoaded', renderCartBadge);
+
+// ── 다크모드 (모든 페이지 공통, 버튼은 topbar/admin-sidebar에 자동 삽입) ──
+const THEME_KEY = 'cafe_theme';
+function applyTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  const btn = document.querySelector('.theme-toggle');
+  if (btn) btn.textContent = theme === 'dark' ? '☀️' : '🌙';
+}
+function toggleTheme() {
+  const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+  localStorage.setItem(THEME_KEY, next);
+  applyTheme(next);
+}
+function initTheme() {
+  const saved = localStorage.getItem(THEME_KEY);
+  const theme = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  const mount = document.querySelector('.topbar__actions') || document.querySelector('.topbar') || document.querySelector('.admin-sidebar nav');
+  if (mount) {
+    const btn = document.createElement('button');
+    btn.className = 'theme-toggle';
+    btn.type = 'button';
+    btn.setAttribute('aria-label', '다크모드 전환');
+    btn.addEventListener('click', toggleTheme);
+    mount.append(btn);
+  }
+  applyTheme(theme);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderCartBadge();
+  initTheme();
+});

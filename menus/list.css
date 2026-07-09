@@ -1,3 +1,12 @@
+.search-input {
+  width: 100%;
+  margin-top: var(--space-4);
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+}
+
 .category-tabs { display: flex; gap: var(--space-2); overflow-x: auto; padding: var(--space-4) 0; }
 .category-tab {
   flex-shrink: 0;

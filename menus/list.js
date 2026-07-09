@@ -1,4 +1,5 @@
 let activeCategory = 'all';
+let searchTerm = '';
 
 function renderCategoryTabs() {
   const tabs = [{ id: 'all', name: '전체' }, ...CATEGORIES];
@@ -8,10 +9,12 @@ function renderCategoryTabs() {
 }
 
 function renderMenuGrid() {
-  const menus = getMenus().filter((m) => activeCategory === 'all' || m.category === activeCategory);
+  const menus = getMenus()
+    .filter((m) => activeCategory === 'all' || m.category === activeCategory)
+    .filter((m) => m.name.toLowerCase().includes(searchTerm.toLowerCase()));
   const grid = document.getElementById('menuGrid');
   if (!menus.length) {
-    grid.innerHTML = '<div class="empty-state"><div class="empty-state__icon">🍽️</div><p>해당 카테고리에 메뉴가 없습니다.</p></div>';
+    grid.innerHTML = '<div class="empty-state"><div class="empty-state__icon">🍽️</div><p>검색 결과가 없습니다.</p></div>';
     return;
   }
   grid.innerHTML = menus
@@ -30,6 +33,11 @@ function renderMenuGrid() {
 document.addEventListener('DOMContentLoaded', () => {
   renderCategoryTabs();
   renderMenuGrid();
+
+  document.getElementById('searchInput').addEventListener('input', (e) => {
+    searchTerm = e.target.value;
+    renderMenuGrid();
+  });
 
   document.getElementById('categoryTabs').addEventListener('click', (e) => {
     const tab = e.target.closest('.category-tab');
