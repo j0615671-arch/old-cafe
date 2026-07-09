@@ -1,0 +1,15 @@
+.category-tabs { display: flex; gap: var(--space-2); overflow-x: auto; padding: var(--space-4) 0; }
+.category-tab {
+  flex-shrink: 0;
+  padding: var(--space-2) var(--space-4);
+  border-radius: 999px;
+  background: var(--color-cream);
+  color: var(--color-brown-700);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+.category-tab.is-active { background: var(--color-brown-700); color: #fff; }
+
+.menu-grid { padding-bottom: var(--space-5); }

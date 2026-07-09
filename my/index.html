@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>마이페이지 - Old Cafe</title>
+<link rel="stylesheet" href="../css/variables.css" />
+<link rel="stylesheet" href="index.css" />
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar__title">👤 마이페이지</div>
+</header>
+
+<div class="container">
+  <div class="card profile-card">
+    <div class="profile-card__emoji">🙂</div>
+    <div class="profile-card__name">게스트님, 안녕하세요</div>
+  </div>
+
+  <div id="statsRow" class="stats-row"></div>
+
+  <nav class="my-menu">
+    <a class="card my-menu__item" href="../basket/list.html"><span>🛒</span> 장바구니</a>
+    <a class="card my-menu__item" href="../orders/list.html"><span>🧾</span> 주문 내역</a>
+    <a class="card my-menu__item" href="../admin/index.html"><span>🔧</span> 관리자 모드</a>
+  </nav>
+</div>
+
+<nav class="bottomnav">
+  <a class="bottomnav__item" href="../index.html"><span>🏠</span><span>홈</span></a>
+  <a class="bottomnav__item" href="../menus/list.html"><span>🍽️</span><span>메뉴</span></a>
+  <a class="bottomnav__item" href="../basket/list.html"><span>🛒</span><span>장바구니</span></a>
+  <a class="bottomnav__item" href="../orders/list.html"><span>🧾</span><span>주문내역</span></a>
+  <a class="bottomnav__item is-active" href="index.html"><span>👤</span><span>마이</span></a>
+</nav>
+
+<script src="../js/data.js"></script>
+<script src="../js/utils.js"></script>
+<script src="index.js"></script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+h1 { font-size: 1.4rem; color: var(--color-brown-900); margin-bottom: var(--space-4); }
+.order-row { display: flex; justify-content: space-between; align-items: center; padding: var(--space-4); margin-bottom: var(--space-2); cursor: pointer; }
+.order-row__meta { font-size: 0.8rem; color: var(--color-text-muted); margin-top: var(--space-1); }
+.order-row__right { display: flex; align-items: center; gap: var(--space-3); }
+.order-row__total { font-weight: 700; color: var(--color-brown-700); }

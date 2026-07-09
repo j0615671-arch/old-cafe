@@ -1,0 +1,10 @@
+h1 { font-size: 1.4rem; color: var(--color-brown-900); margin-bottom: var(--space-4); }
+.section-title { font-size: 1.1rem; color: var(--color-brown-900); margin: var(--space-5) 0 var(--space-3); }
+
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--space-3); }
+.stat-box { padding: var(--space-4); text-align: center; }
+.stat-box__value { font-size: 1.4rem; font-weight: 800; color: var(--color-brown-700); }
+.stat-box__label { font-size: 0.8rem; color: var(--color-text-muted); margin-top: var(--space-1); }
+
+.order-row { display: flex; justify-content: space-between; align-items: center; padding: var(--space-3) var(--space-4); margin-bottom: var(--space-2); }
+.order-row__meta { font-size: 0.8rem; color: var(--color-text-muted); }

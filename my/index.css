@@ -1,0 +1,11 @@
+.profile-card { display: flex; align-items: center; gap: var(--space-4); padding: var(--space-5); margin-bottom: var(--space-4); }
+.profile-card__emoji { font-size: 2.5rem; }
+.profile-card__name { font-weight: 700; font-size: 1.1rem; }
+
+.stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); margin-bottom: var(--space-4); }
+.stat-box { padding: var(--space-4); text-align: center; }
+.stat-box__value { font-size: 1.3rem; font-weight: 800; color: var(--color-brown-700); }
+.stat-box__label { font-size: 0.8rem; color: var(--color-text-muted); margin-top: var(--space-1); }
+
+.my-menu { display: flex; flex-direction: column; gap: var(--space-3); }
+.my-menu__item { padding: var(--space-4); font-weight: 600; display: flex; align-items: center; gap: var(--space-3); }

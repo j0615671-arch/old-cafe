@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>메뉴 추가 - Old Cafe Admin</title>
+<link rel="stylesheet" href="../../css/variables.css" />
+<link rel="stylesheet" href="create.css" />
+</head>
+<body>
+<div class="admin-shell">
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar__title">☕ Old Cafe Admin</div>
+    <nav>
+      <a href="../index.html">📊 대시보드</a>
+      <a href="list.html" class="is-active">🍽️ 메뉴 관리</a>
+      <a href="../orders/list.html">🧾 주문 관리</a>
+      <a href="../../index.html">🏠 고객 화면</a>
+    </nav>
+  </aside>
+  <main class="admin-main">
+    <a href="list.html" class="back-link">← 메뉴 목록</a>
+    <h1>메뉴 추가</h1>
+    <form id="menuForm" class="card form-card">
+      <div class="field">
+        <label for="name">메뉴명</label>
+        <input id="name" name="name" type="text" required />
+      </div>
+      <div class="field">
+        <label for="category">카테고리</label>
+        <select id="category" name="category" required></select>
+      </div>
+      <div class="field">
+        <label for="price">가격</label>
+        <input id="price" name="price" type="number" min="0" step="100" required />
+      </div>
+      <div class="field">
+        <label for="image">이미지 URL</label>
+        <input id="image" name="image" type="url" placeholder="https://..." required />
+      </div>
+      <div class="field">
+        <label for="description">설명</label>
+        <textarea id="description" name="description" required></textarea>
+      </div>
+      <div class="field field-checkbox">
+        <label><input id="soldOut" name="soldOut" type="checkbox" /> 품절 상태로 등록</label>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">추가하기</button>
+    </form>
+  </main>
+</div>
+<script src="../../js/data.js"></script>
+<script src="../../js/utils.js"></script>
+<script src="create.js"></script>
+</body>
+</html>

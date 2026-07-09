@@ -1,0 +1,5 @@
+.hero { text-align: center; padding: var(--space-6) var(--space-4); }
+.hero__emoji { font-size: 3.5rem; }
+.hero__title { font-size: 1.8rem; font-weight: 800; color: var(--color-brown-900); margin: var(--space-2) 0 var(--space-1); }
+.hero__subtitle { color: var(--color-text-muted); margin-bottom: var(--space-4); }
+.section-title { font-size: 1.1rem; font-weight: 700; color: var(--color-brown-900); margin-bottom: var(--space-3); }

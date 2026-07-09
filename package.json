@@ -1,0 +1,24 @@
+{
+  "name": "old-cafe",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "serve . -l 8080",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/j0615671-arch/old-cafe.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/j0615671-arch/old-cafe/issues"
+  },
+  "homepage": "https://github.com/j0615671-arch/old-cafe#readme",
+  "devDependencies": {
+    "serve": "^14.2.6"
+  }
+}
