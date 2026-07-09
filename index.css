@@ -10,5 +10,16 @@
   background: linear-gradient(180deg, rgba(61, 43, 31, 0.35), rgba(61, 43, 31, 0.75));
 }
 .hero__title { font-size: 1.8rem; font-weight: 800; color: #fff; margin: var(--space-2) 0 var(--space-1); text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4); }
-.hero__subtitle { color: #f3e9dc; margin-bottom: var(--space-4); }
+.hero__subtitle { color: #f3e9dc; margin-bottom: var(--space-3); font-weight: 600; }
+.hero__nutrients { display: flex; justify-content: center; gap: var(--space-2); margin-bottom: var(--space-4); flex-wrap: wrap; }
+.hero__nutrients span {
+  padding: 4px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  backdrop-filter: blur(4px);
+}
 .section-title { font-size: 1.1rem; font-weight: 700; color: var(--color-brown-900); margin-bottom: var(--space-3); }
