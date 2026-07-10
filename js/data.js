@@ -7,20 +7,21 @@ const CATEGORIES = [
   { id: 'dessert', name: '디저트' },
 ];
 
-// ponytail: 실사 이미지는 loremflickr(키워드 기반 실제 사진, lock=고정 시드)로 대체. 자체 자산/CDN 붙이면 image 필드만 교체.
+// ponytail: 실사 이미지는 loremflickr에서 받아 img/menus/에 저장해 고정함(원격 URL은 lock을 걸어도 시간 지나면
+// 다른 사진으로 바뀔 수 있어서 로컬로 내려받아 안정화). 이미지 교체 시 img/menus/mN.jpg만 덮어쓰면 됨.
 const DEFAULT_MENUS = [
-  { id: 'm1', name: '아메리카노', category: 'coffee', price: 4000, image: 'https://loremflickr.com/320/320/black-coffee,cup?lock=102', description: '깊고 진한 에스프레소와 물의 조화.', soldOut: false },
-  { id: 'm2', name: '카페라떼', category: 'coffee', price: 4500, image: 'https://loremflickr.com/320/320/latte,coffee?lock=2', description: '부드러운 우유와 에스프레소의 균형.', soldOut: false },
-  { id: 'm3', name: '카푸치노', category: 'coffee', price: 4500, image: 'https://loremflickr.com/320/320/cappuccino?lock=3', description: '풍성한 우유 거품이 올라간 클래식.', soldOut: false },
-  { id: 'm4', name: '바닐라라떼', category: 'coffee', price: 5000, image: 'https://loremflickr.com/320/320/vanilla,latte?lock=104', description: '달콤한 바닐라 시럽이 더해진 라떼.', soldOut: true },
-  { id: 'm5', name: '캐모마일 티', category: 'tea', price: 4500, image: 'https://loremflickr.com/320/320/chamomile?lock=1001', description: '은은한 꽃향으로 마음을 편안하게.', soldOut: false },
-  { id: 'm6', name: '얼그레이 티', category: 'tea', price: 4500, image: 'https://loremflickr.com/320/320/blacktea,cup?lock=108', description: '베르가못 향이 살아있는 홍차.', soldOut: false },
-  { id: 'm7', name: '자몽 에이드', category: 'ade', price: 5500, image: 'https://loremflickr.com/320/320/grapefruit?lock=1204', description: '상큼한 자몽 과육이 가득.', soldOut: false },
-  { id: 'm8', name: '레몬 에이드', category: 'ade', price: 5500, image: 'https://loremflickr.com/320/320/lemon,glass?lock=220', description: '새콤달콤 청량한 여름 음료.', soldOut: false },
-  { id: 'm9', name: '치즈 케이크', category: 'dessert', price: 6500, image: 'https://loremflickr.com/320/320/cheesecake,slice?lock=705', description: '진한 크림치즈의 부드러운 맛.', soldOut: false },
-  { id: 'm10', name: '초코 브라우니', category: 'dessert', price: 5500, image: 'https://loremflickr.com/320/320/brownie,chocolate?lock=10', description: '진한 초콜릿이 가득한 촉촉한 브라우니.', soldOut: false },
-  { id: 'm11', name: '크루아상', category: 'dessert', price: 4000, image: 'https://loremflickr.com/320/320/croissant,bakery?lock=115', description: '겹겹이 바삭한 프랑스식 페이스트리.', soldOut: false },
-  { id: 'm12', name: '콜드브루', category: 'coffee', price: 4800, image: 'https://loremflickr.com/320/320/coldbrew,coffee?lock=12', description: '저온으로 오래 우려낸 부드러운 커피.', soldOut: false },
+  { id: 'm1', name: '아메리카노', category: 'coffee', price: 4000, image: '/img/menus/m1.jpg', description: '깊고 진한 에스프레소와 물의 조화.', soldOut: false },
+  { id: 'm2', name: '카페라떼', category: 'coffee', price: 4500, image: '/img/menus/m2.jpg', description: '부드러운 우유와 에스프레소의 균형.', soldOut: false },
+  { id: 'm3', name: '카푸치노', category: 'coffee', price: 4500, image: '/img/menus/m3.jpg', description: '풍성한 우유 거품이 올라간 클래식.', soldOut: false },
+  { id: 'm4', name: '바닐라라떼', category: 'coffee', price: 5000, image: '/img/menus/m4.jpg', description: '달콤한 바닐라 시럽이 더해진 라떼.', soldOut: true },
+  { id: 'm5', name: '캐모마일 티', category: 'tea', price: 4500, image: '/img/menus/m5.jpg', description: '은은한 꽃향으로 마음을 편안하게.', soldOut: false },
+  { id: 'm6', name: '얼그레이 티', category: 'tea', price: 4500, image: '/img/menus/m6.jpg', description: '베르가못 향이 살아있는 홍차.', soldOut: false },
+  { id: 'm7', name: '자몽 에이드', category: 'ade', price: 5500, image: '/img/menus/m7.jpg', description: '상큼한 자몽 과육이 가득.', soldOut: false },
+  { id: 'm8', name: '레몬 에이드', category: 'ade', price: 5500, image: '/img/menus/m8.jpg', description: '새콤달콤 청량한 여름 음료.', soldOut: false },
+  { id: 'm9', name: '치즈 케이크', category: 'dessert', price: 6500, image: '/img/menus/m9.jpg', description: '진한 크림치즈의 부드러운 맛.', soldOut: false },
+  { id: 'm10', name: '초코 브라우니', category: 'dessert', price: 5500, image: '/img/menus/m10.jpg', description: '진한 초콜릿이 가득한 촉촉한 브라우니.', soldOut: false },
+  { id: 'm11', name: '크루아상', category: 'dessert', price: 4000, image: '/img/menus/m11.jpg', description: '겹겹이 바삭한 프랑스식 페이스트리.', soldOut: false },
+  { id: 'm12', name: '콜드브루', category: 'coffee', price: 4800, image: '/img/menus/m12.jpg', description: '저온으로 오래 우려낸 부드러운 커피.', soldOut: false },
 ];
 
 const ORDER_STATUSES = ['접수완료', '제조중', '제조완료', '픽업완료'];
