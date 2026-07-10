@@ -17,6 +17,24 @@ document.addEventListener('DOMContentLoaded', () => {
   form.description.value = menu.description;
   form.soldOut.checked = menu.soldOut;
 
+  const preview = document.getElementById('imagePreview');
+  function showPreview(src) {
+    preview.src = src;
+    preview.hidden = !src;
+  }
+  showPreview(menu.image);
+  document.getElementById('imageFile').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      form.image.value = reader.result;
+      showPreview(reader.result);
+    };
+    reader.readAsDataURL(file);
+  });
+  form.image.addEventListener('input', () => showPreview(form.image.value));
+
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     updateMenu(menu.id, {

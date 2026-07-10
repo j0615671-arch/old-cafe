@@ -35,8 +35,10 @@
         <input id="price" name="price" type="number" min="0" step="100" required onwheel="this.blur()" />
       </div>
       <div class="field">
-        <label for="image">이미지 URL</label>
-        <input id="image" name="image" type="text" required />
+        <label for="imageFile">이미지</label>
+        <input id="imageFile" type="file" accept="image/*" />
+        <img id="imagePreview" class="image-preview" hidden />
+        <input id="image" name="image" type="text" placeholder="또는 이미지 URL 직접 입력" required />
       </div>
       <div class="field">
         <label for="description">설명</label>
