@@ -5,6 +5,11 @@
   overflow: hidden;
 }
 .hero__overlay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 380px;
   text-align: center;
   padding: var(--space-6) var(--space-4);
   background: linear-gradient(180deg, rgba(61, 43, 31, 0.35), rgba(61, 43, 31, 0.75));
