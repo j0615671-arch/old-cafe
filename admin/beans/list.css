@@ -7,4 +7,5 @@
 .bean-item__name { font-weight: 700; }
 .bean-item__meta { font-size: 0.8rem; color: var(--color-text-muted); }
 .bean-item__note { font-size: 0.85rem; color: var(--color-text-muted); margin: var(--space-2) 0; line-height: 1.4; }
+.bean-item .field { margin-bottom: var(--space-3); }
 .bean-item__actions { display: flex; gap: var(--space-2); flex-wrap: wrap; }
