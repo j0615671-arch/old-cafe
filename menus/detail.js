@@ -5,6 +5,27 @@ function optionGroupsHtml(menu) {
   const opts = MENU_OPTIONS[menu.category] || {};
   let html = '';
 
+  if (opts.bean) {
+    const beans = getBeans();
+    if (beans.length) {
+      const linkedBean = beans.find((b) => b.menuId === menu.id);
+      const defaultBeanId = (linkedBean || beans[0]).id;
+      selected.bean = defaultBeanId;
+      html += `
+      <div class="option-group">
+        <div class="option-group__label">원두 선택</div>
+        <div class="option-chips" data-option="bean">
+          ${beans
+            .map(
+              (b) =>
+                `<button type="button" class="option-chip option-chip--bean ${b.id === defaultBeanId ? 'is-active' : ''}" data-value="${b.id}"><img src="${b.image}" alt="" class="option-chip__bean-img" />${b.origin}</button>`
+            )
+            .join('')}
+        </div>
+      </div>`;
+    }
+  }
+
   if (opts.size) {
     selected.size = 'tall';
     html += `
@@ -60,15 +81,12 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
-  const bean = getBeans().find((b) => b.menuId === menu.id);
-
   container.innerHTML = `
     <div class="detail-hero"><img class="detail-hero__img" src="${menu.image}" alt="${menu.name}" /></div>
     <div class="card detail-info">
       <div class="detail-info__name">${menu.name} ${menu.soldOut ? '<span class="badge badge-soldout">품절</span>' : ''}</div>
       <div class="detail-info__price" id="priceValue">${formatPrice(menu.price)}</div>
       <p class="detail-info__desc">${menu.description}</p>
-      ${bean ? `<div class="detail-info__origin">${ORIGIN_FLAGS[bean.origin] || '☕'} ${bean.origin} 원두(${bean.name}) · ${bean.note}</div>` : ''}
       ${menu.soldOut ? '' : optionGroupsHtml(menu)}
       <div class="qty-control">
         <button id="qtyMinus" ${menu.soldOut ? 'disabled' : ''}>−</button>

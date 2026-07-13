@@ -109,6 +109,10 @@ function getUnitPrice(menu, options = {}) {
 function formatOptions(options) {
   if (!options) return '';
   const parts = [];
+  if (options.bean) {
+    const bean = getBeanById(options.bean);
+    if (bean) parts.push(`${bean.origin} 원두`);
+  }
   if (options.size) parts.push(SIZE_OPTIONS.find((s) => s.id === options.size)?.name);
   if (options.temperature) parts.push(TEMPERATURE_OPTIONS.find((t) => t.id === options.temperature)?.name);
   if (options.shot) parts.push('샷 추가');
