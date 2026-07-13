@@ -1,0 +1,7 @@
+.login-hero { text-align: center; padding: var(--space-6) 0 var(--space-4); }
+.login-hero__emoji { font-size: 3rem; }
+.login-hero__title { font-weight: 800; font-size: 1.2rem; color: var(--color-brown-900); margin-top: var(--space-2); }
+.form-card { max-width: 400px; margin: 0 auto; padding: var(--space-5); }
+.form-error { color: var(--color-danger); font-size: 0.85rem; margin-bottom: var(--space-3); min-height: 1.2em; }
+.form-footer { text-align: center; margin-top: var(--space-4); color: var(--color-text-muted); font-size: 0.9rem; }
+.form-footer a { color: var(--color-brown-700); font-weight: 600; }

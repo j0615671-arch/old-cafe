@@ -1,7 +1,7 @@
 // 공통 유틸리티: 포맷, 라우팅 헬퍼, localStorage 기반 메뉴/카트/주문 저장소
 // ponytail: 백엔드 없이 localStorage를 DB처럼 사용. 서버 붙이면 fetch로 교체.
 
-const STORAGE_KEYS = { MENUS: 'cafe_menus', CART: 'cafe_cart', ORDERS: 'cafe_orders' };
+const STORAGE_KEYS = { MENUS: 'cafe_menus', CART: 'cafe_cart', ORDERS: 'cafe_orders', CUSTOMERS: 'cafe_customers', SESSION: 'cafe_session' };
 
 function formatPrice(n) {
   return n.toLocaleString('ko-KR') + '원';
@@ -158,6 +158,35 @@ function updateOrderStatus(id, status) {
   order.status = status;
   saveOrders(orders);
   return order;
+}
+
+// ── 회원가입/로그인 (ponytail: 데모용. 비밀번호 평문 저장 — 실제 서비스엔 서버측 해싱 필요) ──
+function getCustomers() {
+  return JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOMERS)) || [];
+}
+function saveCustomers(list) {
+  localStorage.setItem(STORAGE_KEYS.CUSTOMERS, JSON.stringify(list));
+}
+function signup({ id, password, name, email, phone }) {
+  const customers = getCustomers();
+  if (customers.some((c) => c.id === id)) return { error: '이미 존재하는 아이디입니다.' };
+  customers.push({ id, password, name, email, phone });
+  saveCustomers(customers);
+  return { success: true };
+}
+function login(id, password) {
+  const customer = getCustomers().find((c) => c.id === id && c.password === password);
+  if (!customer) return { error: '아이디 또는 비밀번호가 올바르지 않습니다.' };
+  localStorage.setItem(STORAGE_KEYS.SESSION, id);
+  return { success: true };
+}
+function logout() {
+  localStorage.removeItem(STORAGE_KEYS.SESSION);
+}
+function getCurrentUser() {
+  const id = localStorage.getItem(STORAGE_KEYS.SESSION);
+  if (!id) return null;
+  return getCustomers().find((c) => c.id === id) || null;
 }
 
 // ── 상단 카트 뱃지 (topbar가 있는 페이지 공통) ──────
