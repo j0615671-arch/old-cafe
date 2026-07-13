@@ -1,15 +1,17 @@
 function renderBeanOfDay() {
   const beans = getMenus().filter((m) => m.origin && !m.soldOut);
   if (!beans.length) return;
-  const bean = beans[new Date().getDate() % beans.length];
+  const featuredId = getFeaturedBeanId();
+  const bean = beans.find((m) => m.id === featuredId) || beans[new Date().getDate() % beans.length];
   document.getElementById('beanOfDay').innerHTML = `
     <a href="menus/detail?id=${bean.id}" class="card bean-card">
-      <img class="bean-card__img" src="${bean.image}" alt="${bean.name}" />
+      <img class="bean-card__photo" src="/img/beans.jpg" alt="원두" />
       <div class="bean-card__body">
         <div class="bean-card__origin">${ORIGIN_FLAGS[bean.origin] || '☕'} ${bean.origin} 원두</div>
         <div class="bean-card__name">${bean.name}</div>
         <p class="bean-card__note">${bean.originNote}</p>
       </div>
+      <img class="bean-card__img" src="${bean.image}" alt="${bean.name}" />
     </a>
   `;
 }

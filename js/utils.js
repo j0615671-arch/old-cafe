@@ -1,7 +1,7 @@
 // 공통 유틸리티: 포맷, 라우팅 헬퍼, localStorage 기반 메뉴/카트/주문 저장소
 // ponytail: 백엔드 없이 localStorage를 DB처럼 사용. 서버 붙이면 fetch로 교체.
 
-const STORAGE_KEYS = { MENUS: 'cafe_menus', CART: 'cafe_cart', ORDERS: 'cafe_orders', CUSTOMERS: 'cafe_customers', SESSION: 'cafe_session' };
+const STORAGE_KEYS = { MENUS: 'cafe_menus', CART: 'cafe_cart', ORDERS: 'cafe_orders', CUSTOMERS: 'cafe_customers', SESSION: 'cafe_session', FEATURED_BEAN: 'cafe_featured_bean' };
 
 function formatPrice(n) {
   return n.toLocaleString('ko-KR') + '원';
@@ -52,6 +52,15 @@ function updateMenu(id, patch) {
 }
 function deleteMenu(id) {
   saveMenus(getMenus().filter((m) => m.id !== id));
+}
+
+// ── 오늘의 추천 원두 (관리자가 직접 선택, 없으면 index.js에서 날짜로 자동 선택) ──
+function getFeaturedBeanId() {
+  return localStorage.getItem(STORAGE_KEYS.FEATURED_BEAN) || '';
+}
+function setFeaturedBeanId(id) {
+  if (id) localStorage.setItem(STORAGE_KEYS.FEATURED_BEAN, id);
+  else localStorage.removeItem(STORAGE_KEYS.FEATURED_BEAN);
 }
 
 // ── 메뉴 옵션 (사이즈/온도/샷/시럽) ─────────────────
