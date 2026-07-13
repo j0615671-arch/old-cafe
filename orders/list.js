@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const container = document.getElementById('orderList');
 
   if (!orders.length) {
-    container.innerHTML = '<div class="empty-state"><div class="empty-state__icon">🧾</div><p>주문 내역이 없습니다.</p></div>';
+    container.innerHTML = `<div class="empty-state"><div class="empty-state__icon">${renderIcon('receipt')}</div><p>주문 내역이 없습니다.</p></div>`;
     return;
   }
 

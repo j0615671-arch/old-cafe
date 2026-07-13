@@ -6,7 +6,7 @@ function renderMenuList() {
   const menus = getMenus();
   const container = document.getElementById('menuList');
   if (!menus.length) {
-    container.innerHTML = '<div class="empty-state"><div class="empty-state__icon">🍽️</div><p>등록된 메뉴가 없습니다.</p></div>';
+    container.innerHTML = `<div class="empty-state"><div class="empty-state__icon">${renderIcon('menu')}</div><p>등록된 메뉴가 없습니다.</p></div>`;
     return;
   }
   container.innerHTML = menus

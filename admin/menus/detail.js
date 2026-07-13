@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const container = document.getElementById('menuDetail');
 
   if (!menu) {
-    container.innerHTML = '<div class="empty-state"><div class="empty-state__icon">🔍</div><p>메뉴를 찾을 수 없습니다.</p></div>';
+    container.innerHTML = `<div class="empty-state"><div class="empty-state__icon">${renderIcon('search')}</div><p>메뉴를 찾을 수 없습니다.</p></div>`;
     return;
   }
 

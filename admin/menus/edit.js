@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
   categorySelect.innerHTML = CATEGORIES.map((c) => `<option value="${c.id}">${c.name}</option>`).join('');
 
   if (!menu) {
-    form.innerHTML = '<div class="empty-state"><div class="empty-state__icon">🔍</div><p>메뉴를 찾을 수 없습니다.</p></div>';
+    form.innerHTML = `<div class="empty-state"><div class="empty-state__icon">${renderIcon('search')}</div><p>메뉴를 찾을 수 없습니다.</p></div>`;
     return;
   }
 

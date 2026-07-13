@@ -5,7 +5,7 @@ function renderBeanList() {
   const container = document.getElementById('beanList');
 
   if (!beans.length) {
-    container.innerHTML = '<div class="empty-state"><div class="empty-state__icon">🌱</div><p>등록된 원두가 없습니다.</p></div>';
+    container.innerHTML = `<div class="empty-state"><div class="empty-state__icon">${renderIcon('bean')}</div><p>등록된 원두가 없습니다.</p></div>`;
     return;
   }
 

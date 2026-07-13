@@ -14,7 +14,7 @@ function renderMenuGrid() {
     .filter((m) => m.name.toLowerCase().includes(searchTerm.toLowerCase()));
   const grid = document.getElementById('menuGrid');
   if (!menus.length) {
-    grid.innerHTML = '<div class="empty-state"><div class="empty-state__icon">🍽️</div><p>검색 결과가 없습니다.</p></div>';
+    grid.innerHTML = `<div class="empty-state"><div class="empty-state__icon">${renderIcon('menu')}</div><p>검색 결과가 없습니다.</p></div>`;
     return;
   }
   grid.innerHTML = menus

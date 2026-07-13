@@ -32,5 +32,5 @@ document.addEventListener('DOMContentLoaded', () => {
       </a>`
         )
         .join('')
-    : '<div class="empty-state"><div class="empty-state__icon">🧾</div><p>아직 주문이 없습니다.</p></div>';
+    : `<div class="empty-state"><div class="empty-state__icon">${renderIcon('receipt')}</div><p>아직 주문이 없습니다.</p></div>`;
 });

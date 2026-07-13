@@ -9,7 +9,7 @@
 </head>
 <body>
 <header class="topbar">
-  <div class="topbar__title">👤 마이페이지</div>
+  <div class="topbar__title" data-icon="user">마이페이지</div>
   <div class="topbar__actions"></div>
 </header>
 
@@ -20,13 +20,13 @@
 
   <nav class="my-menu">
     <a class="card my-menu__item" href="../basket/list.html">
-      <span class="my-menu__icon my-menu__icon--cart">🛒</span>
+      <span class="my-menu__icon my-menu__icon--cart" data-icon="cart"></span>
       <span class="my-menu__label">장바구니</span>
       <span class="my-menu__count" id="cartCount"></span>
       <span class="my-menu__chevron">›</span>
     </a>
     <a class="card my-menu__item" href="../orders/list.html">
-      <span class="my-menu__icon my-menu__icon--orders">🧾</span>
+      <span class="my-menu__icon my-menu__icon--orders" data-icon="receipt"></span>
       <span class="my-menu__label">주문 내역</span>
       <span class="my-menu__count" id="orderCount"></span>
       <span class="my-menu__chevron">›</span>
@@ -37,7 +37,7 @@
 
   <nav class="my-menu">
     <a class="card my-menu__item my-menu__item--admin" href="../admin/">
-      <span class="my-menu__icon my-menu__icon--admin">🔧</span>
+      <span class="my-menu__icon my-menu__icon--admin" data-icon="admin"></span>
       <span class="my-menu__label">관리자 모드</span>
       <span class="my-menu__chevron">›</span>
     </a>

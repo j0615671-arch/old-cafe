@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const container = document.getElementById('orderDetail');
 
   if (!order) {
-    container.innerHTML = '<div class="empty-state"><div class="empty-state__icon">🔍</div><p>주문을 찾을 수 없습니다.</p></div>';
+    container.innerHTML = `<div class="empty-state"><div class="empty-state__icon">${renderIcon('search')}</div><p>주문을 찾을 수 없습니다.</p></div>`;
     return;
   }
 

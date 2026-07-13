@@ -4,7 +4,7 @@ function renderProfileCard() {
 
   if (user) {
     card.innerHTML = `
-      <div class="profile-card__emoji">🙂</div>
+      <div class="profile-card__emoji">${renderIcon('user')}</div>
       <div class="profile-card__body">
         <div class="profile-card__name">${user.name}님, 안녕하세요</div>
         <div class="profile-card__email">${user.email}</div>
@@ -17,7 +17,7 @@ function renderProfileCard() {
     });
   } else {
     card.innerHTML = `
-      <div class="profile-card__emoji">🙂</div>
+      <div class="profile-card__emoji">${renderIcon('user')}</div>
       <div class="profile-card__body">
         <div class="profile-card__name">게스트님, 안녕하세요</div>
         <div class="profile-card__email">로그인하고 더 많은 기능을 이용해보세요</div>

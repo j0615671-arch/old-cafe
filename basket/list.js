@@ -4,7 +4,7 @@ function render() {
   const summaryEl = document.getElementById('cartSummary');
 
   if (!items.length) {
-    itemsEl.innerHTML = '<div class="empty-state"><div class="empty-state__icon">🛒</div><p>장바구니가 비어있습니다.</p></div>';
+    itemsEl.innerHTML = `<div class="empty-state"><div class="empty-state__icon">${renderIcon('cart')}</div><p>장바구니가 비어있습니다.</p></div>`;
     summaryEl.innerHTML = '';
     return;
   }

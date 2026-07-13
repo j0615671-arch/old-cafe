@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     `<option value="">연결 안 함</option>` + coffeeMenus.map((m) => `<option value="${m.id}">${m.name}</option>`).join('');
 
   if (!bean) {
-    form.innerHTML = '<div class="empty-state"><div class="empty-state__icon">🔍</div><p>원두를 찾을 수 없습니다.</p></div>';
+    form.innerHTML = `<div class="empty-state"><div class="empty-state__icon">${renderIcon('search')}</div><p>원두를 찾을 수 없습니다.</p></div>`;
     return;
   }
 
