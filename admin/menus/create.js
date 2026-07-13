@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
       image: form.image.value.trim(),
       description: form.description.value.trim(),
       soldOut: form.soldOut.checked,
+      featured: form.featured.checked,
     });
     location.href = 'list.html';
   });

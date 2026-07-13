@@ -29,7 +29,9 @@ document.addEventListener('DOMContentLoaded', () => {
     location.href = `menus/list?q=${encodeURIComponent(term)}`;
   });
 
-  const featured = getMenus().filter((m) => !m.soldOut).slice(0, 4);
+  const available = getMenus().filter((m) => !m.soldOut);
+  const manuallyFeatured = available.filter((m) => m.featured);
+  const featured = (manuallyFeatured.length ? manuallyFeatured : available).slice(0, 4);
   document.getElementById('featuredMenus').innerHTML = featured
     .map(
       (m) => `

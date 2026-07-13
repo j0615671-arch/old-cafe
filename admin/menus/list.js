@@ -16,12 +16,13 @@ function renderMenuList() {
       <div class="menu-item__top">
         <div class="menu-item__emoji"><img src="${m.image}" alt="${m.name}" /></div>
         <div>
-          <div class="menu-item__name">${m.name} ${m.soldOut ? '<span class="badge badge-soldout">품절</span>' : ''}</div>
+          <div class="menu-item__name">${m.name} ${m.soldOut ? '<span class="badge badge-soldout">품절</span>' : ''} ${m.featured ? '<span class="badge badge-featured">추천</span>' : ''}</div>
           <div class="menu-item__meta">${categoryName(m.category)}</div>
         </div>
       </div>
       <div class="menu-item__price">${formatPrice(m.price)}</div>
       <div class="menu-item__actions">
+        <button class="btn btn-secondary btn-sm" data-feature="${m.id}">${m.featured ? '추천 해제' : '★ 추천 메뉴로 지정'}</button>
         <a class="btn btn-secondary btn-sm" href="edit?id=${m.id}">수정</a>
         <button class="btn btn-danger btn-sm" data-delete="${m.id}">삭제</button>
       </div>
@@ -34,6 +35,14 @@ document.addEventListener('DOMContentLoaded', () => {
   renderMenuList();
 
   document.getElementById('menuList').addEventListener('click', (e) => {
+    const featureBtn = e.target.closest('[data-feature]');
+    if (featureBtn) {
+      e.stopPropagation();
+      const menu = getMenuById(featureBtn.dataset.feature);
+      updateMenu(menu.id, { featured: !menu.featured });
+      renderMenuList();
+      return;
+    }
     const deleteBtn = e.target.closest('[data-delete]');
     if (deleteBtn) {
       e.stopPropagation();

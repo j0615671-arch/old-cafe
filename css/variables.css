@@ -207,6 +207,7 @@ body {
 .badge { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 700; }
 .badge-soldout { background: var(--color-danger); color: #fff; }
 .badge-status { background: var(--color-cream); color: var(--color-brown-700); }
+.badge-featured { background: var(--color-warning); color: #fff; }
 
 /* 검색창 (index, menus/list 공용) */
 .search-input {

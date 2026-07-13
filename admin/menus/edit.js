@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
   form.image.value = menu.image;
   form.description.value = menu.description;
   form.soldOut.checked = menu.soldOut;
+  form.featured.checked = !!menu.featured;
 
   const preview = document.getElementById('imagePreview');
   function showPreview(src) {
@@ -44,6 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
       image: form.image.value.trim(),
       description: form.description.value.trim(),
       soldOut: form.soldOut.checked,
+      featured: form.featured.checked,
     });
     location.href = `detail?id=${menu.id}`;
   });
