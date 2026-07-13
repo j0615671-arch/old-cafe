@@ -16,15 +16,22 @@
   </div>
 </header>
 
-<section class="hero" style="background-image: url('/img/hero.jpg');">
-  <div class="hero__overlay">
-    <h1 class="hero__title">현대인의<br />3대 영양소</h1>
-    <div class="hero__nutrients">
-      <span>니코틴</span>
-      <span>알코올</span>
-      <span>카페인</span>
+<section class="hero">
+  <div class="container hero__grid">
+    <div class="hero__copy">
+      <div class="hero__eyebrow">COFFEE · TEA · ADE · DESSERT</div>
+      <h1 class="hero__title">현대인의<br />3대 영양소</h1>
+      <p class="hero__desc">니코틴, 알코올, 카페인 — 그중 저희가 드릴 수 있는 건 카페인뿐입니다.</p>
+      <div class="hero__nutrients">
+        <span>니코틴</span>
+        <span>알코올</span>
+        <span>카페인</span>
+      </div>
+      <a href="menus/list.html" class="btn btn-primary">메뉴 보러가기</a>
     </div>
-    <a href="menus/list.html" class="btn btn-primary">메뉴 보러가기</a>
+    <figure class="hero__photo">
+      <img src="/img/hero.jpg" alt="용's 카페 매장 전경" />
+    </figure>
   </div>
 </section>
 
@@ -34,7 +41,7 @@
   </form>
 
   <h2 class="section-title">추천 메뉴</h2>
-  <div id="featuredMenus" class="menu-grid"></div>
+  <div id="featuredMenus" class="menu-teaser"></div>
 
   <h2 class="section-title">오늘의 추천 원두</h2>
   <section id="beanOfDaySection" class="bean-hero">
@@ -43,11 +50,11 @@
 </div>
 
 <nav class="bottomnav">
-  <a class="bottomnav__item is-active" href="index.html"><span>🏠</span><span>홈</span></a>
-  <a class="bottomnav__item" href="menus/list.html"><span>🍽️</span><span>메뉴</span></a>
-  <a class="bottomnav__item" href="basket/list.html"><span>🛒</span><span>장바구니</span></a>
-  <a class="bottomnav__item" href="orders/list.html"><span>🧾</span><span>주문내역</span></a>
-  <a class="bottomnav__item" href="my/"><span>👤</span><span>마이</span></a>
+  <a class="bottomnav__item is-active" href="index.html">홈</a>
+  <a class="bottomnav__item" href="menus/list.html">메뉴</a>
+  <a class="bottomnav__item" href="basket/list.html">장바구니</a>
+  <a class="bottomnav__item" href="orders/list.html">주문내역</a>
+  <a class="bottomnav__item" href="my/">마이</a>
 </nav>
 
 <script src="js/data.js"></script>

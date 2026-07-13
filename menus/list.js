@@ -20,11 +20,14 @@ function renderMenuGrid() {
   grid.innerHTML = menus
     .map(
       (m) => `
-    <div class="card menu-card ${m.soldOut ? 'is-soldout' : ''}" data-id="${m.id}">
-      ${m.soldOut ? '<span class="badge badge-soldout">품절</span>' : ''}
-      <div class="menu-card__emoji"><img src="${m.image}" alt="${m.name}" loading="lazy" /></div>
-      <div class="menu-card__name">${m.name}</div>
-      <div class="menu-card__price">${formatPrice(m.price)}</div>
+    <div class="menu-row ${m.soldOut ? 'is-soldout' : ''}" data-id="${m.id}">
+      <img class="menu-row__photo" src="${m.image}" alt="${m.name}" loading="lazy" />
+      <div class="menu-row__body">
+        <div class="menu-row__cat">${m.category}</div>
+        <div class="menu-row__name">${m.name}</div>
+        <div class="menu-row__desc">${m.description}</div>
+      </div>
+      ${m.soldOut ? '<span class="badge badge-soldout">품절</span>' : `<div class="menu-row__price">${formatPrice(m.price)}</div>`}
     </div>`
     )
     .join('');
@@ -51,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.getElementById('menuGrid').addEventListener('click', (e) => {
-    const card = e.target.closest('.menu-card');
-    if (card) location.href = `detail?id=${card.dataset.id}`;
+    const row = e.target.closest('.menu-row');
+    if (row) location.href = `detail?id=${row.dataset.id}`;
   });
 });

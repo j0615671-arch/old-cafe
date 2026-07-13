@@ -35,10 +35,11 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('featuredMenus').innerHTML = featured
     .map(
       (m) => `
-    <a class="card menu-card" href="menus/detail?id=${m.id}">
-      <div class="menu-card__emoji"><img src="${m.image}" alt="${m.name}" loading="lazy" /></div>
-      <div class="menu-card__name">${m.name}</div>
-      <div class="menu-card__price">${formatPrice(m.price)}</div>
+    <a class="menu-teaser__item" href="menus/detail?id=${m.id}">
+      <img class="menu-teaser__photo" src="${m.image}" alt="${m.name}" loading="lazy" />
+      <div class="menu-teaser__cat">${m.category}</div>
+      <div class="menu-teaser__name">${m.name}</div>
+      <div class="menu-teaser__price">${formatPrice(m.price)}</div>
     </a>`
     )
     .join('');
