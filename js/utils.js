@@ -1,7 +1,7 @@
 // 공통 유틸리티: 포맷, 라우팅 헬퍼, localStorage 기반 메뉴/카트/주문 저장소
 // ponytail: 백엔드 없이 localStorage를 DB처럼 사용. 서버 붙이면 fetch로 교체.
 
-const STORAGE_KEYS = { MENUS: 'cafe_menus', CART: 'cafe_cart', ORDERS: 'cafe_orders', CUSTOMERS: 'cafe_customers', SESSION: 'cafe_session', FEATURED_BEAN: 'cafe_featured_bean' };
+const STORAGE_KEYS = { MENUS: 'cafe_menus', BEANS: 'cafe_beans', CART: 'cafe_cart', ORDERS: 'cafe_orders', CUSTOMERS: 'cafe_customers', SESSION: 'cafe_session', FEATURED_BEAN: 'cafe_featured_bean' };
 
 function formatPrice(n) {
   return n.toLocaleString('ko-KR') + '원';
@@ -52,6 +52,41 @@ function updateMenu(id, patch) {
 }
 function deleteMenu(id) {
   saveMenus(getMenus().filter((m) => m.id !== id));
+}
+
+// ── 원두 (관리자에서 CRUD) ──────────────────────────
+function getBeans() {
+  const raw = localStorage.getItem(STORAGE_KEYS.BEANS);
+  if (!raw) {
+    saveBeans(DEFAULT_BEANS);
+    return [...DEFAULT_BEANS];
+  }
+  return JSON.parse(raw);
+}
+function saveBeans(beans) {
+  localStorage.setItem(STORAGE_KEYS.BEANS, JSON.stringify(beans));
+}
+function getBeanById(id) {
+  return getBeans().find((b) => b.id === id) || null;
+}
+function addBean(bean) {
+  const beans = getBeans();
+  const newBean = { ...bean, id: generateId() };
+  beans.push(newBean);
+  saveBeans(beans);
+  return newBean;
+}
+function updateBean(id, patch) {
+  const beans = getBeans();
+  const idx = beans.findIndex((b) => b.id === id);
+  if (idx === -1) return null;
+  beans[idx] = { ...beans[idx], ...patch };
+  saveBeans(beans);
+  return beans[idx];
+}
+function deleteBean(id) {
+  saveBeans(getBeans().filter((b) => b.id !== id));
+  if (getFeaturedBeanId() === id) setFeaturedBeanId('');
 }
 
 // ── 오늘의 추천 원두 (관리자가 직접 선택, 없으면 index.js에서 날짜로 자동 선택) ──

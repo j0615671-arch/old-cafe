@@ -17,19 +17,6 @@ document.addEventListener('DOMContentLoaded', () => {
     <div class="card stat-box"><div class="stat-box__value">${pendingCount}</div><div class="stat-box__label">처리 대기 주문</div></div>
   `;
 
-  const beans = menus.filter((m) => m.origin);
-  const select = document.getElementById('featuredBeanSelect');
-  const currentFeatured = getFeaturedBeanId();
-  select.innerHTML =
-    `<option value="">자동 (매일 날짜순으로 순환)</option>` +
-    beans.map((m) => `<option value="${m.id}" ${m.id === currentFeatured ? 'selected' : ''}>${m.name} (${m.origin}${m.soldOut ? ' · 품절' : ''})</option>`).join('');
-  document.getElementById('featuredBeanSave').addEventListener('click', () => {
-    setFeaturedBeanId(select.value);
-    const saved = document.getElementById('featuredBeanSaved');
-    saved.textContent = '저장됐어요!';
-    setTimeout(() => (saved.textContent = ''), 2000);
-  });
-
   const recent = orders.slice(0, 5);
   const recentEl = document.getElementById('recentOrders');
   recentEl.innerHTML = recent.length

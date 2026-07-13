@@ -1,18 +1,22 @@
 function renderBeanOfDay() {
-  const beans = getMenus().filter((m) => m.origin && !m.soldOut);
-  if (!beans.length) return;
+  const beans = getBeans();
+  const section = document.getElementById('beanOfDaySection');
+  if (!beans.length) {
+    section.hidden = true;
+    return;
+  }
   const featuredId = getFeaturedBeanId();
-  const bean = beans.find((m) => m.id === featuredId) || beans[new Date().getDate() % beans.length];
+  const bean = beans.find((b) => b.id === featuredId) || beans[new Date().getDate() % beans.length];
+  const menu = bean.menuId && getMenuById(bean.menuId);
+
+  section.style.backgroundImage = `url('${bean.image}')`;
   document.getElementById('beanOfDay').innerHTML = `
-    <a href="menus/detail?id=${bean.id}" class="card bean-card">
-      <img class="bean-card__photo" src="/img/beans.jpg" alt="원두" />
-      <div class="bean-card__body">
-        <div class="bean-card__origin">${ORIGIN_FLAGS[bean.origin] || '☕'} ${bean.origin} 원두</div>
-        <div class="bean-card__name">${bean.name}</div>
-        <p class="bean-card__note">${bean.originNote}</p>
-      </div>
-      <img class="bean-card__img" src="${bean.image}" alt="${bean.name}" />
-    </a>
+    <div class="bean-hero__overlay">
+      <div class="bean-hero__origin">${ORIGIN_FLAGS[bean.origin] || '☕'} ${bean.origin} 원두</div>
+      <h3 class="bean-hero__name">${bean.name}</h3>
+      <p class="bean-hero__note">${bean.note}</p>
+      ${menu ? `<a href="menus/detail?id=${menu.id}" class="btn btn-primary">${menu.name} 보러가기</a>` : ''}
+    </div>
   `;
 }
 

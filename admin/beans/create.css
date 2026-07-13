@@ -1,0 +1,5 @@
+.back-link { display: inline-block; margin-bottom: var(--space-4); color: var(--color-text-muted); }
+h1 { font-size: 1.4rem; color: var(--color-brown-900); margin-bottom: var(--space-4); }
+.form-card { max-width: 420px; padding: var(--space-5); }
+.field-checkbox label { display: flex; align-items: center; gap: var(--space-2); font-weight: 400; }
+.image-preview { width: 100px; height: 100px; object-fit: cover; border-radius: var(--radius-sm); margin: var(--space-2) 0; border: 1px solid var(--color-border); }

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>메뉴 수정 - 해피해피 용's 카페 Admin</title>
+<title>원두 수정 - 해피해피 용's 카페 Admin</title>
 <link rel="stylesheet" href="../../css/variables.css" />
 <link rel="stylesheet" href="edit.css" />
 </head>
@@ -13,40 +13,37 @@
     <div class="admin-sidebar__title">☕ 해피해피 용's 카페 Admin</div>
     <nav>
       <a href="../">📊 대시보드</a>
-      <a href="list.html" class="is-active">🍽️ 메뉴 관리</a>
-      <a href="../beans/list.html">🌱 원두 관리</a>
+      <a href="../menus/list.html">🍽️ 메뉴 관리</a>
+      <a href="list.html" class="is-active">🌱 원두 관리</a>
       <a href="../orders/list.html">🧾 주문 관리</a>
       <a href="../../index.html">🏠 고객 화면</a>
     </nav>
   </aside>
   <main class="admin-main">
-    <a href="list.html" class="back-link">← 메뉴 목록</a>
-    <h1>메뉴 수정</h1>
-    <form id="menuForm" class="card form-card">
+    <a href="list.html" class="back-link">← 원두 목록</a>
+    <h1>원두 수정</h1>
+    <form id="beanForm" class="card form-card">
       <div class="field">
-        <label for="name">메뉴명</label>
+        <label for="name">원두명</label>
         <input id="name" name="name" type="text" required />
       </div>
       <div class="field">
-        <label for="category">카테고리</label>
-        <select id="category" name="category" required></select>
+        <label for="origin">원산지</label>
+        <input id="origin" name="origin" type="text" required />
       </div>
       <div class="field">
-        <label for="price">가격</label>
-        <input id="price" name="price" type="number" min="0" step="100" required onwheel="this.blur()" />
-      </div>
-      <div class="field">
-        <label for="imageFile">이미지</label>
+        <label for="imageFile">원두 사진</label>
         <input id="imageFile" type="file" accept="image/*" />
         <img id="imagePreview" class="image-preview" hidden />
-        <input id="image" name="image" type="text" placeholder="또는 이미지 URL 직접 입력" required />
+        <input id="image" name="image" type="text" required />
       </div>
       <div class="field">
-        <label for="description">설명</label>
-        <textarea id="description" name="description" required></textarea>
+        <label for="note">시음 노트</label>
+        <textarea id="note" name="note" required></textarea>
       </div>
-      <div class="field field-checkbox">
-        <label><input id="soldOut" name="soldOut" type="checkbox" /> 품절</label>
+      <div class="field">
+        <label for="menuId">연결할 메뉴 (선택)</label>
+        <select id="menuId" name="menuId"></select>
       </div>
       <button type="submit" class="btn btn-primary btn-block">저장하기</button>
     </form>

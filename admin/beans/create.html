@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>원두 추가 - 해피해피 용's 카페 Admin</title>
+<link rel="stylesheet" href="../../css/variables.css" />
+<link rel="stylesheet" href="create.css" />
+</head>
+<body>
+<div class="admin-shell">
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar__title">☕ 해피해피 용's 카페 Admin</div>
+    <nav>
+      <a href="../">📊 대시보드</a>
+      <a href="../menus/list.html">🍽️ 메뉴 관리</a>
+      <a href="list.html" class="is-active">🌱 원두 관리</a>
+      <a href="../orders/list.html">🧾 주문 관리</a>
+      <a href="../../index.html">🏠 고객 화면</a>
+    </nav>
+  </aside>
+  <main class="admin-main">
+    <a href="list.html" class="back-link">← 원두 목록</a>
+    <h1>원두 추가</h1>
+    <form id="beanForm" class="card form-card">
+      <div class="field">
+        <label for="name">원두명</label>
+        <input id="name" name="name" type="text" placeholder="예: 콜롬비아 수프리모" required />
+      </div>
+      <div class="field">
+        <label for="origin">원산지</label>
+        <input id="origin" name="origin" type="text" placeholder="예: 콜롬비아" required />
+      </div>
+      <div class="field">
+        <label for="imageFile">원두 사진</label>
+        <input id="imageFile" type="file" accept="image/*" />
+        <img id="imagePreview" class="image-preview" hidden />
+        <input id="image" name="image" type="text" placeholder="또는 이미지 URL 직접 입력" required />
+      </div>
+      <div class="field">
+        <label for="note">시음 노트</label>
+        <textarea id="note" name="note" placeholder="예: 부드럽고 균형 잡힌 산미에 은은한 카라멜향." required></textarea>
+      </div>
+      <div class="field">
+        <label for="menuId">연결할 메뉴 (선택)</label>
+        <select id="menuId" name="menuId"></select>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">추가하기</button>
+    </form>
+  </main>
+</div>
+<script src="../../js/data.js"></script>
+<script src="../../js/utils.js"></script>
+<script src="create.js"></script>
+</body>
+</html>

@@ -60,13 +60,15 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
+  const bean = getBeans().find((b) => b.menuId === menu.id);
+
   container.innerHTML = `
     <div class="detail-hero"><img class="detail-hero__img" src="${menu.image}" alt="${menu.name}" /></div>
     <div class="card detail-info">
       <div class="detail-info__name">${menu.name} ${menu.soldOut ? '<span class="badge badge-soldout">품절</span>' : ''}</div>
       <div class="detail-info__price" id="priceValue">${formatPrice(menu.price)}</div>
       <p class="detail-info__desc">${menu.description}</p>
-      ${menu.origin ? `<div class="detail-info__origin">${ORIGIN_FLAGS[menu.origin] || '☕'} ${menu.origin} 원두 · ${menu.originNote}</div>` : ''}
+      ${bean ? `<div class="detail-info__origin">${ORIGIN_FLAGS[bean.origin] || '☕'} ${bean.origin} 원두(${bean.name}) · ${bean.note}</div>` : ''}
       ${menu.soldOut ? '' : optionGroupsHtml(menu)}
       <div class="qty-control">
         <button id="qtyMinus" ${menu.soldOut ? 'disabled' : ''}>−</button>

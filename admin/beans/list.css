@@ -1,0 +1,11 @@
+.admin-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-5); }
+.admin-header h1 { font-size: 1.4rem; color: var(--color-brown-900); }
+.bean-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--space-4); }
+.bean-item { padding: var(--space-4); cursor: default; }
+.bean-item__top { display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-2); }
+.bean-item__img { width: 56px; height: 56px; border-radius: var(--radius-sm); object-fit: cover; flex-shrink: 0; }
+.bean-item__name { font-weight: 700; }
+.bean-item__meta { font-size: 0.8rem; color: var(--color-text-muted); }
+.bean-item__note { font-size: 0.85rem; color: var(--color-text-muted); margin: var(--space-2) 0; line-height: 1.4; }
+.bean-item__actions { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+.badge-featured { background: var(--color-warning); color: #fff; }
