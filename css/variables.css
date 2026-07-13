@@ -103,6 +103,7 @@ body {
 }
 .topbar__actions { display: flex; align-items: center; gap: var(--space-3); }
 .topbar__cart { position: relative; font-size: 1.2rem; }
+.topbar__account { font-size: 1.2rem; line-height: 1; }
 .theme-toggle {
   border: 1px solid var(--color-border);
   background: var(--color-surface);
