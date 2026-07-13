@@ -1,4 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('searchForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const term = document.getElementById('searchInput').value.trim();
+    location.href = `menus/list?q=${encodeURIComponent(term)}`;
+  });
+
   const featured = getMenus().filter((m) => !m.soldOut).slice(0, 4);
   document.getElementById('featuredMenus').innerHTML = featured
     .map(

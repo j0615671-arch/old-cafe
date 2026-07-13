@@ -205,6 +205,16 @@ body {
 .badge-soldout { background: var(--color-danger); color: #fff; }
 .badge-status { background: var(--color-cream); color: var(--color-brown-700); }
 
+/* 검색창 (index, menus/list 공용) */
+.search-input {
+  width: 100%;
+  margin-top: var(--space-4);
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+}
+
 /* 메뉴 그리드 카드 (index, menus/list 공용) */
 .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--space-4); }
 .menu-card { display: block; padding: var(--space-4); text-align: center; position: relative; }
