@@ -297,6 +297,73 @@ function initTheme() {
   applyTheme(theme);
 }
 
+// ── 데스크톱 상단 내비 호버 드롭다운 내용 (실제 메뉴/장바구니/주문/로그인 데이터 재사용) ──
+function navMenuPanel() {
+  const menus = getMenus().filter((m) => !m.soldOut);
+  const tiles = CATEGORIES.map((c) => {
+    const sample = menus.find((m) => m.category === c.id);
+    if (!sample) return '';
+    return `<a href="/menus/list?category=${c.id}" class="cat-grid__link"><img src="${sample.image}" alt="${c.name}" /><span>${c.name}</span></a>`;
+  }).join('');
+  return `<div class="cat-grid">${tiles}</div><a href="/menus/list.html" class="nav-panel__foot">전체 메뉴 보기 →</a>`;
+}
+function navCartPanel() {
+  const items = getCartDetailed();
+  if (!items.length) {
+    return `<p class="nav-panel__empty">장바구니가 비어있습니다.</p><a href="/menus/list.html" class="nav-panel__foot">메뉴 보러가기 →</a>`;
+  }
+  const shown = items.slice(0, 3);
+  const lines = shown
+    .map(
+      (c) => `
+    <div class="cart-line">
+      <img src="${c.menu.image}" alt="${c.menu.name}" />
+      <div>
+        <div class="cart-line__name">${c.menu.name}${c.qty > 1 ? ` x${c.qty}` : ''}</div>
+        <div class="cart-line__opt">${formatOptions(c.options) || ''}</div>
+      </div>
+      <div class="cart-line__price">${formatPrice(c.unitPrice * c.qty)}</div>
+    </div>`
+    )
+    .join('');
+  const more = items.length > shown.length ? `<div class="cart-line__more">외 ${items.length - shown.length}건 더</div>` : '';
+  return `
+    ${lines}${more}
+    <div class="cart-total"><span>합계</span><b>${formatPrice(getCartTotal())}</b></div>
+    <a href="/basket/list.html" class="nav-panel__cta">장바구니 보기</a>
+  `;
+}
+function navOrdersPanel() {
+  const orders = getOrders();
+  if (!orders.length) {
+    return `<p class="nav-panel__empty">아직 주문이 없습니다.</p>`;
+  }
+  const lines = orders
+    .slice(0, 2)
+    .map(
+      (o) => `
+    <div class="order-line">
+      <div class="order-line__top">
+        <span class="order-line__name">${o.items[0].name}${o.items.length > 1 ? ` 외 ${o.items.length - 1}건` : ''}</span>
+        <span class="badge badge-status">${o.status}</span>
+      </div>
+      <div class="order-line__meta">${formatDate(o.createdAt)} · ${formatPrice(o.total)}</div>
+    </div>`
+    )
+    .join('');
+  return `${lines}<a href="/orders/list.html" class="nav-panel__foot">전체 주문내역 보기 →</a>`;
+}
+function navMyPanel() {
+  const user = getCurrentUser();
+  const profile = user
+    ? `<div class="my-profile__name">${user.name}님</div><div class="my-profile__sub">${user.email}</div>`
+    : `<div class="my-profile__name">게스트님</div><div class="my-profile__sub">로그인하고 더 많은 기능을</div>`;
+  const links = user
+    ? `<div class="my-links"><a href="/basket/list.html">장바구니</a><a href="/orders/list.html">주문 내역</a></div>`
+    : `<a href="/auth/login.html" class="nav-panel__cta">로그인</a>`;
+  return `<div class="my-profile"><div class="my-avatar">${renderIcon('user')}</div><div>${profile}</div></div>${links}`;
+}
+
 // ── 데스크톱 상단 내비게이션 (고객 페이지 전용, 하단 탭바 대신 1024px 이상에서 CSS로 노출) ──
 function initDesktopNav() {
   const topbar = document.querySelector('.topbar');
@@ -305,16 +372,30 @@ function initDesktopNav() {
   const section = location.pathname.split('/').filter(Boolean)[0] || '';
   const links = [
     { href: '/', label: '홈', section: '' },
-    { href: '/menus/list.html', label: '메뉴', section: 'menus' },
-    { href: '/basket/list.html', label: '장바구니', section: 'basket' },
-    { href: '/orders/list.html', label: '주문내역', section: 'orders' },
-    { href: '/my/', label: '마이', section: 'my' },
+    { href: '/menus/list.html', label: '메뉴', section: 'menus', panel: navMenuPanel },
+    { href: '/basket/list.html', label: '장바구니', section: 'basket', panel: navCartPanel },
+    { href: '/orders/list.html', label: '주문내역', section: 'orders', panel: navOrdersPanel },
+    { href: '/my/', label: '마이', section: 'my', panel: navMyPanel },
   ];
   const nav = document.createElement('nav');
   nav.className = 'topbar__nav';
   nav.innerHTML = links
-    .map((l) => `<a href="${l.href}" class="${l.section === section ? 'is-active' : ''}">${l.label}</a>`)
+    .map(
+      (l) => `
+    <div class="nav-item">
+      <a href="${l.href}" class="${l.section === section ? 'is-active' : ''}">${l.label}</a>
+      ${l.panel ? '<div class="nav-panel"><div class="nav-panel__inner"></div></div>' : ''}
+    </div>`
+    )
     .join('');
+
+  nav.querySelectorAll('.nav-item').forEach((item, i) => {
+    const { panel } = links[i];
+    if (!panel) return;
+    const inner = item.querySelector('.nav-panel__inner');
+    item.addEventListener('mouseenter', () => { inner.innerHTML = panel(); });
+    item.addEventListener('focusin', () => { inner.innerHTML = panel(); });
+  });
 
   const actions = topbar.querySelector('.topbar__actions');
   if (actions) topbar.insertBefore(nav, actions);

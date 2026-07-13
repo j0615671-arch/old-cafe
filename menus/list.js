@@ -36,6 +36,7 @@ function renderMenuGrid() {
 document.addEventListener('DOMContentLoaded', () => {
   searchTerm = getQueryParam('q') || '';
   document.getElementById('searchInput').value = searchTerm;
+  activeCategory = getQueryParam('category') || 'all';
 
   renderCategoryTabs();
   renderMenuGrid();
