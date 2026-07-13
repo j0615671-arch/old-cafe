@@ -27,3 +27,10 @@
   backdrop-filter: blur(4px);
 }
 .section-title { font-size: 1.1rem; font-weight: 700; color: var(--color-brown-900); margin-bottom: var(--space-3); }
+
+.bean-card { display: flex; gap: var(--space-4); align-items: center; padding: var(--space-4); margin-bottom: var(--space-5); }
+.bean-card__img { width: 90px; height: 90px; object-fit: cover; border-radius: var(--radius-md); flex-shrink: 0; }
+.bean-card__body { min-width: 0; }
+.bean-card__origin { font-size: 0.8rem; font-weight: 700; color: var(--color-brown-700); margin-bottom: 2px; }
+.bean-card__name { font-weight: 800; font-size: 1.05rem; margin-bottom: 4px; }
+.bean-card__note { font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.4; }

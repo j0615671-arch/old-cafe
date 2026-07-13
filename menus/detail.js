@@ -66,6 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="detail-info__name">${menu.name} ${menu.soldOut ? '<span class="badge badge-soldout">품절</span>' : ''}</div>
       <div class="detail-info__price" id="priceValue">${formatPrice(menu.price)}</div>
       <p class="detail-info__desc">${menu.description}</p>
+      ${menu.origin ? `<div class="detail-info__origin">${ORIGIN_FLAGS[menu.origin] || '☕'} ${menu.origin} 원두 · ${menu.originNote}</div>` : ''}
       ${menu.soldOut ? '' : optionGroupsHtml(menu)}
       <div class="qty-control">
         <button id="qtyMinus" ${menu.soldOut ? 'disabled' : ''}>−</button>

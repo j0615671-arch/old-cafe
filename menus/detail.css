@@ -3,7 +3,15 @@
 .detail-info { padding: var(--space-5); }
 .detail-info__name { font-size: 1.3rem; font-weight: 800; color: var(--color-brown-900); margin-bottom: var(--space-2); }
 .detail-info__price { font-size: 1.1rem; font-weight: 700; color: var(--color-brown-700); margin-bottom: var(--space-3); }
-.detail-info__desc { color: var(--color-text-muted); line-height: 1.7; margin-bottom: var(--space-5); }
+.detail-info__desc { color: var(--color-text-muted); line-height: 1.7; margin-bottom: var(--space-3); }
+.detail-info__origin {
+  font-size: 0.85rem;
+  color: var(--color-brown-700);
+  background: var(--color-cream);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--space-5);
+}
 
 .option-group { margin-bottom: var(--space-4); }
 .option-group__label { font-size: 0.85rem; font-weight: 700; color: var(--color-brown-700); margin-bottom: var(--space-2); }
