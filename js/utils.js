@@ -297,8 +297,46 @@ function initDesktopNav() {
   else topbar.append(nav);
 }
 
+// ── PC/모바일 보기 전환 (모든 페이지 하단에 전환 버튼 삽입) ──
+const VIEW_KEY = 'cafe_view_mode';
+function applyViewMode(mode) {
+  document.documentElement.classList.toggle('view-desktop', mode === 'desktop');
+  document.documentElement.classList.toggle('view-mobile', mode === 'mobile');
+  document.querySelectorAll('.view-toggle button').forEach((btn) => {
+    btn.classList.toggle('is-active', btn.dataset.view === mode);
+  });
+}
+function setViewMode(mode) {
+  localStorage.setItem(VIEW_KEY, mode);
+  applyViewMode(mode);
+}
+function initViewToggle() {
+  const bar = document.createElement('div');
+  bar.className = 'view-toggle';
+  if (document.querySelector('.bottomnav')) bar.classList.add('view-toggle--raised');
+  bar.innerHTML = `
+    <button type="button" data-view="mobile">📱 모바일</button>
+    <button type="button" data-view="desktop">🖥 PC</button>
+  `;
+  bar.addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if (btn) setViewMode(btn.dataset.view);
+  });
+  document.body.append(bar);
+
+  const desktopQuery = matchMedia('(min-width: 1024px)');
+  const saved = localStorage.getItem(VIEW_KEY);
+  applyViewMode(saved || (desktopQuery.matches ? 'desktop' : 'mobile'));
+
+  // 사용자가 직접 고정한 적 없으면 화면 크기에 따라 자동으로 계속 맞춤
+  desktopQuery.addEventListener('change', (e) => {
+    if (!localStorage.getItem(VIEW_KEY)) applyViewMode(e.matches ? 'desktop' : 'mobile');
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   renderCartBadge();
   initTheme();
   initDesktopNav();
+  initViewToggle();
 });

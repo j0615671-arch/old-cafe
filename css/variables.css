@@ -260,73 +260,99 @@ body {
 
 @media (max-width: 640px) {
   .admin-shell { flex-direction: column; }
-  .admin-sidebar { width: 100%; display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-4); overflow-x: auto; }
+  .admin-sidebar { width: 100%; display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); padding: var(--space-3) var(--space-4); }
   .admin-sidebar__title { margin-bottom: 0; flex-shrink: 0; }
-  .admin-sidebar nav { display: flex; gap: var(--space-2); flex-shrink: 0; }
+  .admin-sidebar nav { display: flex; flex-wrap: wrap; gap: var(--space-2); }
   .admin-sidebar a { white-space: nowrap; }
 }
 
-/* ── 데스크톱: 고객 페이지는 하단 탭바 대신 상단 가로 내비로, 폭도 넓게 ── */
-@media (min-width: 1024px) {
-  body { padding-bottom: 0; }
-  .bottomnav { display: none; }
-  .container { max-width: 1100px; }
-  .topbar { padding-left: var(--space-6); padding-right: var(--space-6); }
-  .topbar__nav {
-    display: flex;
-    flex: 1;
-    justify-content: center;
-    gap: var(--space-6);
-  }
-  .topbar__nav a {
-    font-weight: 600;
-    font-size: 0.95rem;
-    color: var(--color-text-muted);
-    padding: 4px 0;
-    border-bottom: 2px solid transparent;
-  }
-  .topbar__nav a.is-active { color: var(--color-brown-700); border-bottom-color: var(--color-brown-700); }
-  .hero__overlay { min-height: 460px; }
-  .hero__title { font-size: 3rem; }
+/* ── PC/모바일 보기 전환 토글 (모든 페이지 하단 고정) ── */
+.view-toggle {
+  position: fixed;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  z-index: 30;
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: var(--color-surface-glass);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  box-shadow: var(--shadow-sm);
 }
-
-/* ── 데스크톱: 관리자 페이지는 넓은 대시보드형 레이아웃으로 ── */
-@media (min-width: 1024px) {
-  .admin-sidebar { width: 240px; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
-  .admin-sidebar__title { font-size: 1.15rem; }
-  .admin-sidebar a { padding: var(--space-3); font-size: 0.95rem; }
-  .admin-main { max-width: none; padding: var(--space-6) var(--space-6); }
-
-  .stats-grid { grid-template-columns: repeat(4, 1fr); gap: var(--space-4); }
-  .stat-box { padding: var(--space-5); text-align: left; }
-  .stat-box__value { font-size: 2.1rem; }
-
-  /* 메뉴/원두/주문 목록을 카드 그리드 대신 표 형태로 */
-  .admin-table-head {
-    display: flex;
-    align-items: center;
-    gap: var(--space-4);
-    padding: var(--space-2) var(--space-4);
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: var(--color-text-muted);
-  }
-  .admin-table { background: var(--color-surface-glass); border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; }
-  .admin-table.menu-grid, .admin-table.bean-grid { display: block; }
-  .admin-table .card {
-    background: transparent;
-    backdrop-filter: none;
-    border: none;
-    border-radius: 0;
-    border-bottom: 1px solid var(--color-border);
-    box-shadow: none;
-  }
-  .admin-table .card:last-child { border-bottom: none; }
-
-  .menu-item, .bean-item, .admin-table .order-row { display: flex; align-items: center; gap: var(--space-4); padding: var(--space-3) var(--space-4); margin-bottom: 0; }
-  .menu-item__top, .bean-item__top { flex: 1; min-width: 0; margin-bottom: 0; }
-  .menu-item__price { width: 100px; margin: 0; text-align: right; flex-shrink: 0; }
-  .menu-item__actions, .bean-item__actions { margin-left: auto; flex-wrap: nowrap; flex-shrink: 0; }
-  .bean-item .field { flex: 0 0 220px; margin-bottom: 0; }
-  .bean-item__note { display: none; }
+.view-toggle--raised { bottom: 84px; }
+.view-toggle button {
+  border: none;
+  background: transparent;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  cursor: pointer;
 }
+.view-toggle button.is-active { background: var(--color-brown-700); color: #fff; }
+
+/* ── PC 보기: 고객 페이지는 하단 탭바 대신 상단 가로 내비로, 폭도 넓게 ── */
+html.view-desktop body { padding-bottom: 0; }
+html.view-desktop .bottomnav { display: none; }
+html.view-desktop .container { max-width: 1100px; }
+html.view-desktop .topbar { padding-left: var(--space-6); padding-right: var(--space-6); }
+html.view-desktop .topbar__nav {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  gap: var(--space-6);
+}
+html.view-desktop .topbar__nav a {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--color-text-muted);
+  padding: 4px 0;
+  border-bottom: 2px solid transparent;
+}
+html.view-desktop .topbar__nav a.is-active { color: var(--color-brown-700); border-bottom-color: var(--color-brown-700); }
+html.view-desktop .hero__overlay { min-height: 460px; }
+html.view-desktop .hero__title { font-size: 3rem; }
+
+/* ── PC 보기: 관리자 페이지는 넓은 대시보드형 레이아웃으로 ── */
+html.view-desktop .admin-sidebar { display: block; width: 240px; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+html.view-desktop .admin-sidebar__title { font-size: 1.15rem; }
+html.view-desktop .admin-sidebar a { padding: var(--space-3); font-size: 0.95rem; }
+html.view-desktop .admin-sidebar nav { display: block; }
+html.view-desktop .admin-main { max-width: none; padding: var(--space-6) var(--space-6); }
+
+html.view-desktop .stats-grid { grid-template-columns: repeat(4, 1fr); gap: var(--space-4); }
+html.view-desktop .stat-box { padding: var(--space-5); text-align: left; }
+html.view-desktop .stat-box__value { font-size: 2.1rem; }
+
+/* 메뉴/원두/주문 목록을 카드 그리드 대신 표 형태로 */
+html.view-desktop .admin-table-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-2) var(--space-4);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+html.view-desktop .admin-table { background: var(--color-surface-glass); border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; }
+html.view-desktop .admin-table.menu-grid, html.view-desktop .admin-table.bean-grid { display: block; }
+html.view-desktop .admin-table .card {
+  background: transparent;
+  backdrop-filter: none;
+  border: none;
+  border-radius: 0;
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: none;
+}
+html.view-desktop .admin-table .card:last-child { border-bottom: none; }
+
+html.view-desktop .menu-item, html.view-desktop .bean-item, html.view-desktop .admin-table .order-row { display: flex; align-items: center; gap: var(--space-4); padding: var(--space-3) var(--space-4); margin-bottom: 0; }
+html.view-desktop .menu-item__top, html.view-desktop .bean-item__top { flex: 1; min-width: 0; margin-bottom: 0; }
+html.view-desktop .menu-item__price { width: 100px; margin: 0; text-align: right; flex-shrink: 0; }
+html.view-desktop .menu-item__actions, html.view-desktop .bean-item__actions { margin-left: auto; flex-wrap: nowrap; flex-shrink: 0; }
+html.view-desktop .bean-item .field { flex: 0 0 220px; margin-bottom: 0; }
+html.view-desktop .bean-item__note { display: none; }
