@@ -225,7 +225,32 @@ function initTheme() {
   applyTheme(theme);
 }
 
+// ── 데스크톱 상단 내비게이션 (고객 페이지 전용, 하단 탭바 대신 1024px 이상에서 CSS로 노출) ──
+function initDesktopNav() {
+  const topbar = document.querySelector('.topbar');
+  if (!topbar || !document.querySelector('.bottomnav')) return; // 관리자 페이지는 제외
+
+  const section = location.pathname.split('/').filter(Boolean)[0] || '';
+  const links = [
+    { href: '/', label: '홈', section: '' },
+    { href: '/menus/list.html', label: '메뉴', section: 'menus' },
+    { href: '/basket/list.html', label: '장바구니', section: 'basket' },
+    { href: '/orders/list.html', label: '주문내역', section: 'orders' },
+    { href: '/my/', label: '마이', section: 'my' },
+  ];
+  const nav = document.createElement('nav');
+  nav.className = 'topbar__nav';
+  nav.innerHTML = links
+    .map((l) => `<a href="${l.href}" class="${l.section === section ? 'is-active' : ''}">${l.label}</a>`)
+    .join('');
+
+  const actions = topbar.querySelector('.topbar__actions');
+  if (actions) topbar.insertBefore(nav, actions);
+  else topbar.append(nav);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   renderCartBadge();
   initTheme();
+  initDesktopNav();
 });
