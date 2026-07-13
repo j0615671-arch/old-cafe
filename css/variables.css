@@ -256,6 +256,7 @@ body {
 }
 .admin-sidebar a.is-active, .admin-sidebar a:hover { background: rgba(255,255,255,0.08); color: #fff; }
 .admin-main { flex: 1; padding: var(--space-5); max-width: 960px; }
+.admin-table-head { display: none; }
 
 @media (max-width: 640px) {
   .admin-shell { flex-direction: column; }
@@ -287,4 +288,45 @@ body {
   .topbar__nav a.is-active { color: var(--color-brown-700); border-bottom-color: var(--color-brown-700); }
   .hero__overlay { min-height: 460px; }
   .hero__title { font-size: 3rem; }
+}
+
+/* ── 데스크톱: 관리자 페이지는 넓은 대시보드형 레이아웃으로 ── */
+@media (min-width: 1024px) {
+  .admin-sidebar { width: 240px; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+  .admin-sidebar__title { font-size: 1.15rem; }
+  .admin-sidebar a { padding: var(--space-3); font-size: 0.95rem; }
+  .admin-main { max-width: none; padding: var(--space-6) var(--space-6); }
+
+  .stats-grid { grid-template-columns: repeat(4, 1fr); gap: var(--space-4); }
+  .stat-box { padding: var(--space-5); text-align: left; }
+  .stat-box__value { font-size: 2.1rem; }
+
+  /* 메뉴/원두/주문 목록을 카드 그리드 대신 표 형태로 */
+  .admin-table-head {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-2) var(--space-4);
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--color-text-muted);
+  }
+  .admin-table { background: var(--color-surface-glass); border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; }
+  .admin-table.menu-grid, .admin-table.bean-grid { display: block; }
+  .admin-table .card {
+    background: transparent;
+    backdrop-filter: none;
+    border: none;
+    border-radius: 0;
+    border-bottom: 1px solid var(--color-border);
+    box-shadow: none;
+  }
+  .admin-table .card:last-child { border-bottom: none; }
+
+  .menu-item, .bean-item, .admin-table .order-row { display: flex; align-items: center; gap: var(--space-4); padding: var(--space-3) var(--space-4); margin-bottom: 0; }
+  .menu-item__top, .bean-item__top { flex: 1; min-width: 0; margin-bottom: 0; }
+  .menu-item__price { width: 100px; margin: 0; text-align: right; flex-shrink: 0; }
+  .menu-item__actions, .bean-item__actions { margin-left: auto; flex-wrap: nowrap; flex-shrink: 0; }
+  .bean-item .field { flex: 0 0 220px; margin-bottom: 0; }
+  .bean-item__note { display: none; }
 }
