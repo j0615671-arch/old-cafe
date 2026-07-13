@@ -31,7 +31,7 @@ function renderBeanList() {
       </div>
       <div class="bean-item__actions">
         <button class="btn btn-secondary btn-sm" data-feature="${b.id}" ${isFeatured ? 'disabled' : ''}>${isFeatured ? '추천 중' : '오늘의 추천으로 지정'}</button>
-        <a class="btn btn-secondary btn-sm" href="edit.html?id=${b.id}">수정</a>
+        <a class="btn btn-secondary btn-sm" href="edit?id=${b.id}">수정</a>
         <button class="btn btn-danger btn-sm" data-delete="${b.id}">삭제</button>
       </div>
     </div>`;
