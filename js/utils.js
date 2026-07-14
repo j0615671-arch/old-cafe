@@ -235,9 +235,21 @@ async function getCurrentUser() {
     data: { user },
   } = await sb.auth.getUser();
   if (!user) return null;
-  const { data: profile } = await sb.from('profiles').select('username, name, phone').eq('id', user.id).single();
+  const { data: profile } = await sb.from('profiles').select('username, name, phone, is_admin').eq('id', user.id).single();
   if (!profile) return null;
-  return { uid: user.id, id: profile.username, name: profile.name, email: user.email, phone: profile.phone };
+  return { uid: user.id, id: profile.username, name: profile.name, email: user.email, phone: profile.phone, isAdmin: profile.is_admin };
+}
+
+// ── 관리자 페이지 접근 제한 (admin-shell이 있는 페이지에서만 동작) ──
+async function guardAdmin() {
+  if (!document.querySelector('.admin-shell')) return;
+  const user = await getCurrentUser();
+  if (!user) {
+    location.href = '/auth/login.html';
+  } else if (!user.isAdmin) {
+    alert('관리자만 접근할 수 있습니다.');
+    location.href = '/';
+  }
 }
 
 // ── 주문 (로그인 필수) ──────────────────────────────
@@ -457,4 +469,5 @@ document.addEventListener('DOMContentLoaded', () => {
   initIcons();
   initTheme();
   initDesktopNav();
+  guardAdmin();
 });
