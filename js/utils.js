@@ -433,8 +433,18 @@ function initDesktopNav() {
     const { panel } = links[i];
     if (!panel) return;
     const inner = item.querySelector('.nav-panel__inner');
-    item.addEventListener('mouseenter', async () => { inner.innerHTML = await panel(); });
-    item.addEventListener('focusin', async () => { inner.innerHTML = await panel(); });
+    // 패널 안 링크를 클릭하면 focusin이 다시 튀어올라 innerHTML을 갈아치우면서
+    // 클릭 대상 엘리먼트가 사라져 네비게이션이 취소됨 → 이미 열려있을 땐 다시 그리지 않음
+    let open = false;
+    const refresh = async () => {
+      if (open) return;
+      open = true;
+      inner.innerHTML = await panel();
+    };
+    item.addEventListener('mouseenter', refresh);
+    item.addEventListener('focusin', refresh);
+    item.addEventListener('mouseleave', () => { open = false; });
+    item.addEventListener('focusout', (e) => { if (!item.contains(e.relatedTarget)) open = false; });
   });
 
   const actions = topbar.querySelector('.topbar__actions');
