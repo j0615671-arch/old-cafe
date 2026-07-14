@@ -62,4 +62,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const cartCount = getCartCount();
   if (cartCount > 0) document.getElementById('cartCount').textContent = cartCount;
   if (orders.length > 0) document.getElementById('orderCount').textContent = orders.length;
+
+  const mileageBalance = await getMileageBalance();
+  if (mileageBalance > 0) document.getElementById('mileageCount').textContent = formatPrice(mileageBalance);
 });

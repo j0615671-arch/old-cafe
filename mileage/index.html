@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>마일리지 충전 - 해피해피 용's 카페</title>
+<link rel="stylesheet" href="../css/variables.css" />
+<link rel="stylesheet" href="index.css" />
+</head>
+<body>
+<header class="topbar">
+  <a href="../my/" class="topbar__back">←</a>
+  <div class="topbar__title">마일리지 충전</div>
+</header>
+
+<div class="container">
+  <div class="card mileage-balance">
+    <div class="mileage-balance__label">내 마일리지</div>
+    <div class="mileage-balance__value" id="balanceValue">0원</div>
+  </div>
+
+  <h2 class="section-title">충전 금액 선택</h2>
+  <div id="tierList" class="tier-list"></div>
+
+  <p class="mileage-note">* 발표/데모용 테스트 결제입니다. 실제 카드 대금이 청구되지 않습니다.</p>
+</div>
+
+<nav class="bottomnav">
+  <a class="bottomnav__item" href="../index.html">홈</a>
+  <a class="bottomnav__item" href="../menus/list.html">메뉴</a>
+  <a class="bottomnav__item" href="../basket/list.html">장바구니</a>
+  <a class="bottomnav__item" href="../orders/list.html">주문내역</a>
+  <a class="bottomnav__item is-active" href="../my/">마이</a>
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="../js/supabase-client.js"></script>
+<script src="https://js.tosspayments.com/v2/standard"></script>
+<script src="../js/toss-client.js"></script>
+<script src="../js/data.js"></script>
+<script src="../js/utils.js"></script>
+<script src="index.js"></script>
+</body>
+</html>

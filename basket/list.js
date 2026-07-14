@@ -33,9 +33,17 @@ async function render() {
   ).join('');
 
   const total = await getCartTotal();
+  const user = await getCurrentUser();
+  const canPayWithMileage = user && user.mileageBalance >= total;
   summaryEl.innerHTML = `
     <div class="card cart-summary">
       <div class="cart-summary__row"><span>총 금액</span><span>${formatPrice(total)}</span></div>
+      ${
+        user
+          ? `<div class="cart-summary__mileage">보유 마일리지 ${formatPrice(user.mileageBalance)}${canPayWithMileage ? '' : ' · 부족하면 <a href="../mileage/">충전하기</a>'}</div>`
+          : ''
+      }
+      ${canPayWithMileage ? `<button id="mileageBtn" class="btn btn-secondary btn-block">마일리지로 결제</button>` : ''}
       <button id="orderBtn" class="btn btn-primary btn-block">주문하기</button>
     </div>
   `;
@@ -48,6 +56,19 @@ async function render() {
     }
     if (!(await getCurrentUser())) location.href = '../auth/login.html';
   });
+
+  const mileageBtn = document.getElementById('mileageBtn');
+  if (mileageBtn) {
+    mileageBtn.addEventListener('click', async () => {
+      try {
+        const order = await createOrderWithMileage();
+        if (order) location.href = `../orders/detail?id=${order.id}`;
+      } catch (err) {
+        alert(err.message || '결제에 실패했습니다.');
+        await render();
+      }
+    });
+  }
 }
 
 document.addEventListener('DOMContentLoaded', async () => {

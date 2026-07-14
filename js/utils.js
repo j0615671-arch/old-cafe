@@ -17,6 +17,10 @@ const ICONS = {
   receipt: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h8M8 9h2"/></svg>',
   home: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="M9 22V12h6v10"/></svg>',
   admin: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.6 5.6L3 18l3 3 6.1-6.1a4 4 0 0 0 5.6-5.6l-2.8 2.8-2-2Z"/></svg>',
+  check: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.5 2.5 5-5"/></svg>',
+  alert: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 16h.01"/></svg>',
+  loader: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>',
+  wallet: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7H4a1 1 0 0 0-1 1v9a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-3"/><path d="M3 8V6a2 2 0 0 1 2-2h11v4"/><path d="M17 13h4v3h-4a1.5 1.5 0 0 1 0-3Z"/></svg>',
 };
 function renderIcon(name) {
   return ICONS[name] || '';
@@ -235,9 +239,46 @@ async function getCurrentUser() {
     data: { user },
   } = await sb.auth.getUser();
   if (!user) return null;
-  const { data: profile } = await sb.from('profiles').select('username, name, phone, is_admin').eq('id', user.id).single();
+  const { data: profile } = await sb.from('profiles').select('username, name, phone, is_admin, mileage_balance').eq('id', user.id).single();
   if (!profile) return null;
-  return { uid: user.id, id: profile.username, name: profile.name, email: user.email, phone: profile.phone, isAdmin: profile.is_admin };
+  return {
+    uid: user.id,
+    id: profile.username,
+    name: profile.name,
+    email: user.email,
+    phone: profile.phone,
+    isAdmin: profile.is_admin,
+    mileageBalance: profile.mileage_balance,
+  };
+}
+
+// ── 마일리지 충전(토스페이먼츠) / 마일리지로 결제 ──────────
+async function getMileageBalance() {
+  const user = await getCurrentUser();
+  return user ? user.mileageBalance : 0;
+}
+async function createPendingPayment(orderId, amount) {
+  const user = await getCurrentUser();
+  if (!user) throw new Error('로그인이 필요합니다.');
+  const { error } = await sb.from('payments').insert({ customer_id: user.uid, order_id: orderId, amount, status: 'pending' });
+  if (error) throw error;
+}
+async function confirmPayment({ orderId, paymentKey, amount }) {
+  const {
+    data: { session },
+  } = await sb.auth.getSession();
+  const { data, error } = await sb.functions.invoke('confirm-payment', {
+    body: { orderId, paymentKey, amount },
+    headers: { Authorization: `Bearer ${session?.access_token}` },
+  });
+  if (error) throw error;
+  if (data?.error) throw new Error(data.error);
+  return data;
+}
+async function payWithMileage(items, total) {
+  const { data, error } = await sb.rpc('pay_with_mileage', { p_items: items, p_total: total });
+  if (error) throw new Error(error.message.includes('마일리지') ? error.message : '결제에 실패했습니다.');
+  return mapOrderRow(data);
 }
 
 // ── 관리자 페이지 접근 제한 (admin-shell이 있는 페이지에서만 동작) ──
@@ -270,10 +311,8 @@ async function getOrderById(id) {
   if (error) throw error;
   return data ? mapOrderRow(data) : null;
 }
-async function createOrder() {
-  const user = await getCurrentUser();
-  if (!user) return null;
-  const items = (await getCartDetailed()).map((c) => ({
+async function buildOrderItems() {
+  return (await getCartDetailed()).map((c) => ({
     menuId: c.menuId,
     name: c.menu.name,
     image: c.menu.image,
@@ -281,6 +320,11 @@ async function createOrder() {
     qty: c.qty,
     options: c.options,
   }));
+}
+async function createOrder() {
+  const user = await getCurrentUser();
+  if (!user) return null;
+  const items = await buildOrderItems();
   if (!items.length) return null;
   const total = items.reduce((sum, i) => sum + i.price * i.qty, 0);
   const { data, error } = await sb
@@ -291,6 +335,16 @@ async function createOrder() {
   if (error) throw error;
   clearCart();
   return mapOrderRow(data);
+}
+async function createOrderWithMileage() {
+  const user = await getCurrentUser();
+  if (!user) return null;
+  const items = await buildOrderItems();
+  if (!items.length) return null;
+  const total = items.reduce((sum, i) => sum + i.price * i.qty, 0);
+  const order = await payWithMileage(items, total);
+  clearCart();
+  return order;
 }
 async function updateOrderStatus(id, status) {
   const { data, error } = await sb.from('orders').update({ status }).eq('id', id).select().maybeSingle();
