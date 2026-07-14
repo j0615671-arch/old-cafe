@@ -1,12 +1,12 @@
 let qty = 1;
 let selected = {};
 
-function optionGroupsHtml(menu) {
+async function optionGroupsHtml(menu) {
   const opts = MENU_OPTIONS[menu.category] || {};
   let html = '';
 
   if (opts.bean) {
-    const beans = getBeans();
+    const beans = await getBeans();
     if (beans.length) {
       const linkedBean = beans.find((b) => b.menuId === menu.id);
       const defaultBeanId = (linkedBean || beans[0]).id;
@@ -71,9 +71,9 @@ function updatePriceDisplay(menu) {
   document.getElementById('priceValue').textContent = formatPrice(unitPrice * qty);
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   const id = getQueryParam('id');
-  const menu = id && getMenuById(id);
+  const menu = id && (await getMenuById(id));
   const container = document.getElementById('menuDetail');
 
   if (!menu) {
@@ -81,13 +81,15 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
+  const optionsHtml = menu.soldOut ? '' : await optionGroupsHtml(menu);
+
   container.innerHTML = `
     <div class="detail-hero"><img class="detail-hero__img" src="${menu.image}" alt="${menu.name}" /></div>
     <div class="card detail-info">
       <div class="detail-info__name">${menu.name} ${menu.soldOut ? '<span class="badge badge-soldout">품절</span>' : ''}</div>
       <div class="detail-info__price" id="priceValue">${formatPrice(menu.price)}</div>
       <p class="detail-info__desc">${menu.description}</p>
-      ${menu.soldOut ? '' : optionGroupsHtml(menu)}
+      ${optionsHtml}
       <div class="qty-control">
         <button id="qtyMinus" ${menu.soldOut ? 'disabled' : ''}>−</button>
         <span class="qty-control__value" id="qtyValue">1</span>

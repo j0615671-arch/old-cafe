@@ -1,5 +1,5 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const orders = getOrders();
+document.addEventListener('DOMContentLoaded', async () => {
+  const orders = await getOrders();
   const container = document.getElementById('orderList');
 
   if (!orders.length) {

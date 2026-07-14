@@ -4,9 +4,9 @@ function isToday(isoString) {
   return d.toDateString() === now.toDateString();
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  const menus = getMenus();
-  const orders = getOrders();
+document.addEventListener('DOMContentLoaded', async () => {
+  const menus = await getMenus();
+  const orders = await getAllOrders();
   const todaySales = orders.filter((o) => isToday(o.createdAt)).reduce((sum, o) => sum + o.total, 0);
   const pendingCount = orders.filter((o) => o.status !== ORDER_STATUSES[ORDER_STATUSES.length - 1]).length;
 

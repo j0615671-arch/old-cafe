@@ -2,9 +2,9 @@ function categoryName(id) {
   return CATEGORIES.find((c) => c.id === id)?.name || id;
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   const id = getQueryParam('id');
-  const menu = id && getMenuById(id);
+  const menu = id && (await getMenuById(id));
   const container = document.getElementById('menuDetail');
 
   if (!menu) {
@@ -26,9 +26,9 @@ document.addEventListener('DOMContentLoaded', () => {
     </div>
   `;
 
-  document.getElementById('deleteBtn').addEventListener('click', () => {
+  document.getElementById('deleteBtn').addEventListener('click', async () => {
     if (confirm('이 메뉴를 삭제할까요?')) {
-      deleteMenu(menu.id);
+      await deleteMenu(menu.id);
       location.href = 'list.html';
     }
   });

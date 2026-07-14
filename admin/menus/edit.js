@@ -1,6 +1,6 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   const id = getQueryParam('id');
-  const menu = id && getMenuById(id);
+  const menu = id && (await getMenuById(id));
   const form = document.getElementById('menuForm');
   const categorySelect = document.getElementById('category');
   categorySelect.innerHTML = CATEGORIES.map((c) => `<option value="${c.id}">${c.name}</option>`).join('');
@@ -36,9 +36,9 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   form.image.addEventListener('input', () => showPreview(form.image.value));
 
-  form.addEventListener('submit', (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    updateMenu(menu.id, {
+    await updateMenu(menu.id, {
       name: form.name.value.trim(),
       category: form.category.value,
       price: Number(form.price.value),

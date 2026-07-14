@@ -1,5 +1,5 @@
-function renderProfileCard() {
-  const user = getCurrentUser();
+async function renderProfileCard() {
+  const user = await getCurrentUser();
   const card = document.getElementById('profileCard');
 
   if (user) {
@@ -11,8 +11,8 @@ function renderProfileCard() {
       </div>
       <button id="logoutBtn" class="btn btn-secondary btn-sm">로그아웃</button>
     `;
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-      logout();
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await logout();
       renderProfileCard();
     });
   } else {
@@ -27,10 +27,25 @@ function renderProfileCard() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  renderProfileCard();
+async function renderStampCard() {
+  const progress = await getStampProgress();
+  document.getElementById('stampCardDots').innerHTML = renderStampDots(progress.inCycle);
+  document.getElementById('stampCount').textContent = progress.loggedIn ? `${progress.inCycle}/${STAMP_GOAL}` : '';
+  const descEl = document.getElementById('stampCardDesc');
+  if (!progress.loggedIn) {
+    descEl.textContent = '로그인하면 주문할 때마다 도장이 쌓여요.';
+  } else if (progress.remaining === 0) {
+    descEl.textContent = '도장을 다 모았어요! 매장에서 무료 음료로 교환해보세요.';
+  } else {
+    descEl.textContent = `${progress.remaining}개만 더 모으면 음료 1잔이 무료예요.`;
+  }
+}
 
-  const orders = getOrders();
+document.addEventListener('DOMContentLoaded', async () => {
+  await renderProfileCard();
+  await renderStampCard();
+
+  const orders = await getOrders();
   const totalSpent = orders.reduce((sum, o) => sum + o.total, 0);
 
   document.getElementById('statsRow').innerHTML = `

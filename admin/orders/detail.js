@@ -1,6 +1,6 @@
-function render() {
+async function render() {
   const id = getQueryParam('id');
-  const order = id && getOrderById(id);
+  const order = id && (await getOrderById(id));
   const container = document.getElementById('orderDetail');
 
   if (!order) {
@@ -8,22 +8,26 @@ function render() {
     return;
   }
 
-  container.innerHTML = `
-    <div class="card order-card">
-      <div class="order-card__meta">${formatDate(order.createdAt)}</div>
-      ${order.items
-        .map(
-          (i) => `
+  const itemRows = (
+    await Promise.all(
+      order.items.map(
+        async (i) => `
         <div class="order-item">
           <img class="order-item__emoji" src="${i.image}" alt="${i.name}" />
           <div>
             <div>${i.name} x${i.qty}</div>
-            ${formatOptions(i.options) ? `<div class="order-item__options">${formatOptions(i.options)}</div>` : ''}
+            ${(await formatOptions(i.options)) ? `<div class="order-item__options">${await formatOptions(i.options)}</div>` : ''}
           </div>
           <span class="order-item__price">${formatPrice(i.price * i.qty)}</span>
         </div>`
-        )
-        .join('')}
+      )
+    )
+  ).join('');
+
+  container.innerHTML = `
+    <div class="card order-card">
+      <div class="order-card__meta">${formatDate(order.createdAt)}</div>
+      ${itemRows}
       <div class="order-total"><span>총 결제금액</span><span>${formatPrice(order.total)}</span></div>
       <div class="status-control">
         <select id="statusSelect">
@@ -34,8 +38,8 @@ function render() {
     </div>
   `;
 
-  document.getElementById('saveStatus').addEventListener('click', () => {
-    updateOrderStatus(order.id, document.getElementById('statusSelect').value);
+  document.getElementById('saveStatus').addEventListener('click', async () => {
+    await updateOrderStatus(order.id, document.getElementById('statusSelect').value);
     render();
   });
 }

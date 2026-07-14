@@ -35,6 +35,18 @@
   </div>
 </section>
 
+<section class="stamp-banner">
+  <div class="container stamp-banner__inner">
+    <div class="stamp-banner__copy">
+      <div class="stamp-banner__eyebrow">STAMP CARD</div>
+      <h2 class="stamp-banner__title">도장 10개 모으면<br />음료 1잔이 무료</h2>
+      <p class="stamp-banner__desc" id="stampDesc"></p>
+      <a href="menus/list.html" id="stampCta" class="btn btn-primary">메뉴 보러가기</a>
+    </div>
+    <div class="stamp-banner__dots" id="stampDots"></div>
+  </div>
+</section>
+
 <div class="container">
   <form id="searchForm" class="search-form">
     <input id="searchInput" class="search-input" type="search" placeholder="메뉴 이름으로 검색" />
@@ -57,6 +69,8 @@
   <a class="bottomnav__item" href="my/">마이</a>
 </nav>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="js/supabase-client.js"></script>
 <script src="js/data.js"></script>
 <script src="js/utils.js"></script>
 <script src="index.js"></script>

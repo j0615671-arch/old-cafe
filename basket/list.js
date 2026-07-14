@@ -1,5 +1,5 @@
-function render() {
-  const items = getCartDetailed();
+async function render() {
+  const items = await getCartDetailed();
   const itemsEl = document.getElementById('cartItems');
   const summaryEl = document.getElementById('cartSummary');
 
@@ -9,14 +9,16 @@ function render() {
     return;
   }
 
-  itemsEl.innerHTML = items
-    .map(
-      (c) => `
+  itemsEl.innerHTML = (
+    await Promise.all(
+      items.map(async (c) => {
+        const optionsText = await formatOptions(c.options);
+        return `
     <div class="card cart-item" data-line-id="${c.lineId}">
       <div class="cart-item__emoji"><img src="${c.menu.image}" alt="${c.menu.name}" /></div>
       <div class="cart-item__body">
         <div class="cart-item__name">${c.menu.name}</div>
-        ${formatOptions(c.options) ? `<div class="cart-item__options">${formatOptions(c.options)}</div>` : ''}
+        ${optionsText ? `<div class="cart-item__options">${optionsText}</div>` : ''}
         <div class="cart-item__price">${formatPrice(c.unitPrice)}</div>
         <div class="cart-item__qty">
           <button data-minus>−</button>
@@ -25,27 +27,33 @@ function render() {
         </div>
       </div>
       <div class="cart-item__remove" data-remove>삭제</div>
-    </div>`
+    </div>`;
+      })
     )
-    .join('');
+  ).join('');
 
+  const total = await getCartTotal();
   summaryEl.innerHTML = `
     <div class="card cart-summary">
-      <div class="cart-summary__row"><span>총 금액</span><span>${formatPrice(getCartTotal())}</span></div>
+      <div class="cart-summary__row"><span>총 금액</span><span>${formatPrice(total)}</span></div>
       <button id="orderBtn" class="btn btn-primary btn-block">주문하기</button>
     </div>
   `;
 
-  document.getElementById('orderBtn').addEventListener('click', () => {
-    const order = createOrder();
-    if (order) location.href = `../orders/detail?id=${order.id}`;
+  document.getElementById('orderBtn').addEventListener('click', async () => {
+    const order = await createOrder();
+    if (order) {
+      location.href = `../orders/detail?id=${order.id}`;
+      return;
+    }
+    if (!(await getCurrentUser())) location.href = '../auth/login.html';
   });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  render();
+document.addEventListener('DOMContentLoaded', async () => {
+  await render();
 
-  document.getElementById('cartItems').addEventListener('click', (e) => {
+  document.getElementById('cartItems').addEventListener('click', async (e) => {
     const item = e.target.closest('.cart-item');
     if (!item) return;
     const lineId = item.dataset.lineId;
@@ -55,6 +63,6 @@ document.addEventListener('DOMContentLoaded', () => {
     else if (e.target.closest('[data-remove]')) removeFromCart(lineId);
     else return;
     renderCartBadge();
-    render();
+    await render();
   });
 });

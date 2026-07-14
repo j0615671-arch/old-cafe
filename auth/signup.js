@@ -1,12 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('signupForm').addEventListener('submit', (e) => {
+  document.getElementById('signupForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const form = e.target;
-    const id = form.id.value.trim();
-    const password = form.password.value;
-    const result = signup({
-      id,
-      password,
+    const result = await signup({
+      id: form.id.value.trim(),
+      password: form.password.value,
       name: form.name.value.trim(),
       email: form.email.value.trim(),
       phone: form.phone.value.trim(),
@@ -15,7 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('formError').textContent = result.error;
       return;
     }
-    login(id, password);
     location.href = '../my/';
   });
 });

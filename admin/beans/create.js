@@ -1,5 +1,5 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const coffeeMenus = getMenus().filter((m) => m.category === 'coffee');
+document.addEventListener('DOMContentLoaded', async () => {
+  const coffeeMenus = (await getMenus()).filter((m) => m.category === 'coffee');
   document.getElementById('menuId').innerHTML =
     `<option value="">연결 안 함</option>` + coffeeMenus.map((m) => `<option value="${m.id}">${m.name}</option>`).join('');
 
@@ -21,10 +21,10 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   imageInput.addEventListener('input', () => showPreview(imageInput.value));
 
-  document.getElementById('beanForm').addEventListener('submit', (e) => {
+  document.getElementById('beanForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const form = e.target;
-    addBean({
+    await addBean({
       name: form.name.value.trim(),
       origin: form.origin.value.trim(),
       image: form.image.value.trim(),

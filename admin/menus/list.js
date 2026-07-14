@@ -2,8 +2,8 @@ function categoryName(id) {
   return CATEGORIES.find((c) => c.id === id)?.name || id;
 }
 
-function renderMenuList() {
-  const menus = getMenus();
+async function renderMenuList() {
+  const menus = await getMenus();
   const container = document.getElementById('menuList');
   if (!menus.length) {
     container.innerHTML = `<div class="empty-state"><div class="empty-state__icon">${renderIcon('menu')}</div><p>등록된 메뉴가 없습니다.</p></div>`;
@@ -31,24 +31,24 @@ function renderMenuList() {
     .join('');
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  renderMenuList();
+document.addEventListener('DOMContentLoaded', async () => {
+  await renderMenuList();
 
-  document.getElementById('menuList').addEventListener('click', (e) => {
+  document.getElementById('menuList').addEventListener('click', async (e) => {
     const featureBtn = e.target.closest('[data-feature]');
     if (featureBtn) {
       e.stopPropagation();
-      const menu = getMenuById(featureBtn.dataset.feature);
-      updateMenu(menu.id, { featured: !menu.featured });
-      renderMenuList();
+      const menu = await getMenuById(featureBtn.dataset.feature);
+      await updateMenu(menu.id, { featured: !menu.featured });
+      await renderMenuList();
       return;
     }
     const deleteBtn = e.target.closest('[data-delete]');
     if (deleteBtn) {
       e.stopPropagation();
       if (confirm('이 메뉴를 삭제할까요?')) {
-        deleteMenu(deleteBtn.dataset.delete);
-        renderMenuList();
+        await deleteMenu(deleteBtn.dataset.delete);
+        await renderMenuList();
       }
       return;
     }

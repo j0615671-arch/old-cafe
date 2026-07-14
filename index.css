@@ -15,6 +15,19 @@
 .hero__photo img { width: 100%; height: 260px; border-radius: var(--radius-md); object-fit: cover; }
 .section-title { font-family: var(--font-display); font-size: 1.15rem; font-weight: 600; color: var(--color-brown-900); margin-bottom: var(--space-3); }
 
+.stamp-banner { background: var(--color-cream); padding: var(--space-6) 0; margin-bottom: var(--space-6); }
+.stamp-banner__inner { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: var(--space-5); align-items: center; }
+.stamp-banner__eyebrow { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.16em; color: var(--color-brown-700); margin-bottom: var(--space-3); }
+.stamp-banner__title { font-family: var(--font-display); font-size: 1.8rem; font-weight: 600; line-height: 1.25; color: var(--color-brown-900); margin-bottom: var(--space-3); }
+.stamp-banner__desc { color: var(--color-text-muted); font-size: 0.92rem; margin-bottom: var(--space-4); max-width: 30em; }
+.stamp-banner__dots { display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--space-2); max-width: 320px; }
+.stamp-banner__dots .stamp-dot { min-width: 0; }
+.stamp-banner__dots .icon { width: 18px; height: 18px; }
+@media (max-width: 640px) {
+  .stamp-banner__inner { grid-template-columns: 1fr; }
+  .stamp-banner__dots { max-width: 260px; }
+}
+
 .bean-hero {
   background-size: cover;
   background-position: center;

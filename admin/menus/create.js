@@ -20,10 +20,10 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   imageInput.addEventListener('input', () => showPreview(imageInput.value));
 
-  document.getElementById('menuForm').addEventListener('submit', (e) => {
+  document.getElementById('menuForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const form = e.target;
-    addMenu({
+    await addMenu({
       name: form.name.value.trim(),
       category: form.category.value,
       price: Number(form.price.value),

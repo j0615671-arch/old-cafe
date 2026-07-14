@@ -1,7 +1,7 @@
-function renderBeanList() {
-  const beans = getBeans();
-  const coffeeMenus = getMenus().filter((m) => m.category === 'coffee');
-  const featuredId = getFeaturedBeanId();
+async function renderBeanList() {
+  const beans = await getBeans();
+  const coffeeMenus = (await getMenus()).filter((m) => m.category === 'coffee');
+  const featuredId = await getFeaturedBeanId();
   const container = document.getElementById('beanList');
 
   if (!beans.length) {
@@ -39,29 +39,29 @@ function renderBeanList() {
     .join('');
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  renderBeanList();
+document.addEventListener('DOMContentLoaded', async () => {
+  await renderBeanList();
 
-  document.getElementById('beanList').addEventListener('click', (e) => {
+  document.getElementById('beanList').addEventListener('click', async (e) => {
     const featureBtn = e.target.closest('[data-feature]');
     if (featureBtn) {
-      setFeaturedBeanId(featureBtn.dataset.feature);
-      renderBeanList();
+      await setFeaturedBeanId(featureBtn.dataset.feature);
+      await renderBeanList();
       return;
     }
     const deleteBtn = e.target.closest('[data-delete]');
     if (deleteBtn) {
       if (confirm('이 원두를 삭제할까요?')) {
-        deleteBean(deleteBtn.dataset.delete);
-        renderBeanList();
+        await deleteBean(deleteBtn.dataset.delete);
+        await renderBeanList();
       }
     }
   });
 
-  document.getElementById('beanList').addEventListener('change', (e) => {
+  document.getElementById('beanList').addEventListener('change', async (e) => {
     const select = e.target.closest('[data-menu-select]');
     if (select) {
-      updateBean(select.dataset.menuSelect, { menuId: select.value || null });
+      await updateBean(select.dataset.menuSelect, { menuId: select.value || null });
     }
   });
 });

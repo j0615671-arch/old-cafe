@@ -16,6 +16,15 @@
 <div class="container">
   <div class="card profile-card" id="profileCard"></div>
 
+  <div class="card stamp-card" id="stampCard">
+    <div class="stamp-card__head">
+      <span class="stamp-card__title">도장 쿠폰</span>
+      <span class="stamp-card__count" id="stampCount"></span>
+    </div>
+    <div class="stamp-card__dots" id="stampCardDots"></div>
+    <p class="stamp-card__desc" id="stampCardDesc"></p>
+  </div>
+
   <div id="statsRow" class="stats-row"></div>
 
   <nav class="my-menu">
@@ -52,6 +61,8 @@
   <a class="bottomnav__item is-active" href="./">마이</a>
 </nav>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="../js/supabase-client.js"></script>
 <script src="../js/data.js"></script>
 <script src="../js/utils.js"></script>
 <script src="index.js"></script>

@@ -1,8 +1,8 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   const id = getQueryParam('id');
-  const bean = id && getBeanById(id);
+  const bean = id && (await getBeanById(id));
   const form = document.getElementById('beanForm');
-  const coffeeMenus = getMenus().filter((m) => m.category === 'coffee');
+  const coffeeMenus = (await getMenus()).filter((m) => m.category === 'coffee');
   document.getElementById('menuId').innerHTML =
     `<option value="">연결 안 함</option>` + coffeeMenus.map((m) => `<option value="${m.id}">${m.name}</option>`).join('');
 
@@ -35,9 +35,9 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   form.image.addEventListener('input', () => showPreview(form.image.value));
 
-  form.addEventListener('submit', (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    updateBean(bean.id, {
+    await updateBean(bean.id, {
       name: form.name.value.trim(),
       origin: form.origin.value.trim(),
       image: form.image.value.trim(),

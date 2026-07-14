@@ -8,8 +8,8 @@ function renderCategoryTabs() {
     .join('');
 }
 
-function renderMenuGrid() {
-  const menus = getMenus()
+async function renderMenuGrid() {
+  const menus = (await getMenus())
     .filter((m) => activeCategory === 'all' || m.category === activeCategory)
     .filter((m) => m.name.toLowerCase().includes(searchTerm.toLowerCase()));
   const grid = document.getElementById('menuGrid');
@@ -33,25 +33,25 @@ function renderMenuGrid() {
     .join('');
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   searchTerm = getQueryParam('q') || '';
   document.getElementById('searchInput').value = searchTerm;
   activeCategory = getQueryParam('category') || 'all';
 
   renderCategoryTabs();
-  renderMenuGrid();
+  await renderMenuGrid();
 
-  document.getElementById('searchInput').addEventListener('input', (e) => {
+  document.getElementById('searchInput').addEventListener('input', async (e) => {
     searchTerm = e.target.value;
-    renderMenuGrid();
+    await renderMenuGrid();
   });
 
-  document.getElementById('categoryTabs').addEventListener('click', (e) => {
+  document.getElementById('categoryTabs').addEventListener('click', async (e) => {
     const tab = e.target.closest('.category-tab');
     if (!tab) return;
     activeCategory = tab.dataset.category;
     renderCategoryTabs();
-    renderMenuGrid();
+    await renderMenuGrid();
   });
 
   document.getElementById('menuGrid').addEventListener('click', (e) => {

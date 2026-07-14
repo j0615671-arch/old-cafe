@@ -1,7 +1,7 @@
-// 공통 유틸리티: 포맷, 라우팅 헬퍼, localStorage 기반 메뉴/카트/주문 저장소
-// ponytail: 백엔드 없이 localStorage를 DB처럼 사용. 서버 붙이면 fetch로 교체.
+// 공통 유틸리티: 포맷, 라우팅 헬퍼, Supabase 기반 메뉴/원두/주문/회원 데이터 레이어
+// 장바구니만 기기 로컬(localStorage) 유지 — 결제 전 상태라 자연스러움.
 
-const STORAGE_KEYS = { MENUS: 'cafe_menus', BEANS: 'cafe_beans', CART: 'cafe_cart', ORDERS: 'cafe_orders', CUSTOMERS: 'cafe_customers', SESSION: 'cafe_session', FEATURED_BEAN: 'cafe_featured_bean' };
+const STORAGE_KEYS = { CART: 'cafe_cart' };
 
 // ── 아이콘 (이모지 대신 쓰는 얇은 선 SVG 세트) ──
 const ICONS = {
@@ -44,82 +44,107 @@ function getQueryParam(name) {
   return new URLSearchParams(location.search).get(name);
 }
 
-// ── 메뉴 ──────────────────────────────────────────
-function getMenus() {
-  const raw = localStorage.getItem(STORAGE_KEYS.MENUS);
-  if (!raw) {
-    saveMenus(DEFAULT_MENUS);
-    return [...DEFAULT_MENUS];
-  }
-  return JSON.parse(raw);
+function mapMenuRow(row) {
+  return { id: row.id, name: row.name, category: row.category, price: row.price, image: row.image, description: row.description, soldOut: row.sold_out, featured: row.featured };
 }
-function saveMenus(menus) {
-  localStorage.setItem(STORAGE_KEYS.MENUS, JSON.stringify(menus));
+function mapBeanRow(row) {
+  return { id: row.id, name: row.name, origin: row.origin, image: row.image, note: row.note, menuId: row.menu_id };
 }
-function getMenuById(id) {
-  return getMenus().find((m) => m.id === id) || null;
+function mapOrderRow(row) {
+  return { id: row.id, items: row.items, total: row.total, status: row.status, createdAt: row.created_at };
 }
-function addMenu(menu) {
-  const menus = getMenus();
-  const newMenu = { ...menu, id: generateId() };
-  menus.push(newMenu);
-  saveMenus(menus);
-  return newMenu;
+
+// ── 메뉴 (Supabase, 페이지 로드당 캐시) ──────────────
+let _menusCache = null;
+async function getMenus() {
+  if (_menusCache) return _menusCache;
+  const { data, error } = await sb.from('menus').select('*').order('created_at');
+  if (error) throw error;
+  _menusCache = data.map(mapMenuRow);
+  return _menusCache;
 }
-function updateMenu(id, patch) {
-  const menus = getMenus();
-  const idx = menus.findIndex((m) => m.id === id);
-  if (idx === -1) return null;
-  menus[idx] = { ...menus[idx], ...patch };
-  saveMenus(menus);
-  return menus[idx];
+async function getMenuById(id) {
+  return (await getMenus()).find((m) => m.id === id) || null;
 }
-function deleteMenu(id) {
-  saveMenus(getMenus().filter((m) => m.id !== id));
+async function addMenu(menu) {
+  const { data, error } = await sb
+    .from('menus')
+    .insert({ name: menu.name, category: menu.category, price: menu.price, image: menu.image, description: menu.description, sold_out: !!menu.soldOut, featured: !!menu.featured })
+    .select()
+    .single();
+  if (error) throw error;
+  _menusCache = null;
+  return mapMenuRow(data);
+}
+async function updateMenu(id, patch) {
+  const dbPatch = {};
+  if ('name' in patch) dbPatch.name = patch.name;
+  if ('category' in patch) dbPatch.category = patch.category;
+  if ('price' in patch) dbPatch.price = patch.price;
+  if ('image' in patch) dbPatch.image = patch.image;
+  if ('description' in patch) dbPatch.description = patch.description;
+  if ('soldOut' in patch) dbPatch.sold_out = patch.soldOut;
+  if ('featured' in patch) dbPatch.featured = patch.featured;
+  const { data, error } = await sb.from('menus').update(dbPatch).eq('id', id).select().maybeSingle();
+  if (error) throw error;
+  _menusCache = null;
+  return data ? mapMenuRow(data) : null;
+}
+async function deleteMenu(id) {
+  const { error } = await sb.from('menus').delete().eq('id', id);
+  if (error) throw error;
+  _menusCache = null;
 }
 
 // ── 원두 (관리자에서 CRUD) ──────────────────────────
-function getBeans() {
-  const raw = localStorage.getItem(STORAGE_KEYS.BEANS);
-  if (!raw) {
-    saveBeans(DEFAULT_BEANS);
-    return [...DEFAULT_BEANS];
-  }
-  return JSON.parse(raw);
+let _beansCache = null;
+async function getBeans() {
+  if (_beansCache) return _beansCache;
+  const { data, error } = await sb.from('beans').select('*').order('created_at');
+  if (error) throw error;
+  _beansCache = data.map(mapBeanRow);
+  return _beansCache;
 }
-function saveBeans(beans) {
-  localStorage.setItem(STORAGE_KEYS.BEANS, JSON.stringify(beans));
+async function getBeanById(id) {
+  return (await getBeans()).find((b) => b.id === id) || null;
 }
-function getBeanById(id) {
-  return getBeans().find((b) => b.id === id) || null;
+async function addBean(bean) {
+  const { data, error } = await sb
+    .from('beans')
+    .insert({ name: bean.name, origin: bean.origin, image: bean.image, note: bean.note, menu_id: bean.menuId || null })
+    .select()
+    .single();
+  if (error) throw error;
+  _beansCache = null;
+  return mapBeanRow(data);
 }
-function addBean(bean) {
-  const beans = getBeans();
-  const newBean = { ...bean, id: generateId() };
-  beans.push(newBean);
-  saveBeans(beans);
-  return newBean;
+async function updateBean(id, patch) {
+  const dbPatch = {};
+  if ('name' in patch) dbPatch.name = patch.name;
+  if ('origin' in patch) dbPatch.origin = patch.origin;
+  if ('image' in patch) dbPatch.image = patch.image;
+  if ('note' in patch) dbPatch.note = patch.note;
+  if ('menuId' in patch) dbPatch.menu_id = patch.menuId || null;
+  const { data, error } = await sb.from('beans').update(dbPatch).eq('id', id).select().maybeSingle();
+  if (error) throw error;
+  _beansCache = null;
+  return data ? mapBeanRow(data) : null;
 }
-function updateBean(id, patch) {
-  const beans = getBeans();
-  const idx = beans.findIndex((b) => b.id === id);
-  if (idx === -1) return null;
-  beans[idx] = { ...beans[idx], ...patch };
-  saveBeans(beans);
-  return beans[idx];
-}
-function deleteBean(id) {
-  saveBeans(getBeans().filter((b) => b.id !== id));
-  if (getFeaturedBeanId() === id) setFeaturedBeanId('');
+async function deleteBean(id) {
+  const { error } = await sb.from('beans').delete().eq('id', id);
+  if (error) throw error;
+  _beansCache = null;
+  if ((await getFeaturedBeanId()) === id) await setFeaturedBeanId('');
 }
 
 // ── 오늘의 추천 원두 (관리자가 직접 선택, 없으면 index.js에서 날짜로 자동 선택) ──
-function getFeaturedBeanId() {
-  return localStorage.getItem(STORAGE_KEYS.FEATURED_BEAN) || '';
+async function getFeaturedBeanId() {
+  const { data } = await sb.from('app_settings').select('value').eq('key', 'featured_bean_id').maybeSingle();
+  return data?.value || '';
 }
-function setFeaturedBeanId(id) {
-  if (id) localStorage.setItem(STORAGE_KEYS.FEATURED_BEAN, id);
-  else localStorage.removeItem(STORAGE_KEYS.FEATURED_BEAN);
+async function setFeaturedBeanId(id) {
+  if (id) await sb.from('app_settings').upsert({ key: 'featured_bean_id', value: id });
+  else await sb.from('app_settings').delete().eq('key', 'featured_bean_id');
 }
 
 // ── 메뉴 옵션 (사이즈/온도/샷/시럽) ─────────────────
@@ -130,11 +155,11 @@ function getUnitPrice(menu, options = {}) {
   if (options.syrup) price += SYRUP_PRICE;
   return price;
 }
-function formatOptions(options) {
+async function formatOptions(options) {
   if (!options) return '';
   const parts = [];
   if (options.bean) {
-    const bean = getBeanById(options.bean);
+    const bean = await getBeanById(options.bean);
     if (bean) parts.push(`${bean.origin} 원두`);
   }
   if (options.size) parts.push(SIZE_OPTIONS.find((s) => s.id === options.size)?.name);
@@ -144,7 +169,7 @@ function formatOptions(options) {
   return parts.filter(Boolean).join(' · ');
 }
 
-// ── 장바구니 ──────────────────────────────────────
+// ── 장바구니 (기기 로컬) ──────────────────────────
 function getCart() {
   return JSON.parse(localStorage.getItem(STORAGE_KEYS.CART)) || [];
 }
@@ -178,30 +203,65 @@ function clearCart() {
 function getCartCount() {
   return getCart().reduce((sum, c) => sum + c.qty, 0);
 }
-function getCartDetailed() {
-  return getCart()
-    .map((c) => {
-      const menu = getMenuById(c.menuId);
+async function getCartDetailed() {
+  const items = await Promise.all(
+    getCart().map(async (c) => {
+      const menu = await getMenuById(c.menuId);
       return menu ? { ...c, menu, unitPrice: getUnitPrice(menu, c.options) } : null;
     })
-    .filter(Boolean);
+  );
+  return items.filter(Boolean);
 }
-function getCartTotal() {
-  return getCartDetailed().reduce((sum, c) => sum + c.unitPrice * c.qty, 0);
+async function getCartTotal() {
+  return (await getCartDetailed()).reduce((sum, c) => sum + c.unitPrice * c.qty, 0);
 }
 
-// ── 주문 ──────────────────────────────────────────
-function getOrders() {
-  return JSON.parse(localStorage.getItem(STORAGE_KEYS.ORDERS)) || [];
+// ── 인증 (Supabase Auth. 아이디/이름/전화번호는 profiles 테이블에 별도 저장) ──
+async function signup({ id, password, name, email, phone }) {
+  const { error } = await sb.auth.signUp({ email, password, options: { data: { username: id, name, phone } } });
+  if (error) return { error: error.message.includes('already registered') ? '이미 존재하는 이메일입니다.' : error.message };
+  return { success: true };
 }
-function saveOrders(orders) {
-  localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(orders));
+async function login(email, password) {
+  const { error } = await sb.auth.signInWithPassword({ email, password });
+  if (error) return { error: '이메일 또는 비밀번호가 올바르지 않습니다.' };
+  return { success: true };
 }
-function getOrderById(id) {
-  return getOrders().find((o) => o.id === id) || null;
+async function logout() {
+  await sb.auth.signOut();
 }
-function createOrder() {
-  const items = getCartDetailed().map((c) => ({
+async function getCurrentUser() {
+  const {
+    data: { user },
+  } = await sb.auth.getUser();
+  if (!user) return null;
+  const { data: profile } = await sb.from('profiles').select('username, name, phone').eq('id', user.id).single();
+  if (!profile) return null;
+  return { uid: user.id, id: profile.username, name: profile.name, email: user.email, phone: profile.phone };
+}
+
+// ── 주문 (로그인 필수) ──────────────────────────────
+async function getOrders() {
+  const user = await getCurrentUser();
+  if (!user) return [];
+  const { data, error } = await sb.from('orders').select('*').eq('customer_id', user.uid).order('created_at', { ascending: false });
+  if (error) throw error;
+  return data.map(mapOrderRow);
+}
+async function getAllOrders() {
+  const { data, error } = await sb.from('orders').select('*').order('created_at', { ascending: false });
+  if (error) throw error;
+  return data.map(mapOrderRow);
+}
+async function getOrderById(id) {
+  const { data, error } = await sb.from('orders').select('*').eq('id', id).maybeSingle();
+  if (error) throw error;
+  return data ? mapOrderRow(data) : null;
+}
+async function createOrder() {
+  const user = await getCurrentUser();
+  if (!user) return null;
+  const items = (await getCartDetailed()).map((c) => ({
     menuId: c.menuId,
     name: c.menu.name,
     image: c.menu.image,
@@ -210,55 +270,32 @@ function createOrder() {
     options: c.options,
   }));
   if (!items.length) return null;
-  const order = {
-    id: generateId(),
-    items,
-    total: items.reduce((sum, i) => sum + i.price * i.qty, 0),
-    status: ORDER_STATUSES[0],
-    createdAt: new Date().toISOString(),
-  };
-  const orders = getOrders();
-  orders.unshift(order);
-  saveOrders(orders);
+  const total = items.reduce((sum, i) => sum + i.price * i.qty, 0);
+  const { data, error } = await sb
+    .from('orders')
+    .insert({ customer_id: user.uid, items, total, status: ORDER_STATUSES[0] })
+    .select()
+    .single();
+  if (error) throw error;
   clearCart();
-  return order;
+  return mapOrderRow(data);
 }
-function updateOrderStatus(id, status) {
-  const orders = getOrders();
-  const order = orders.find((o) => o.id === id);
-  if (!order) return null;
-  order.status = status;
-  saveOrders(orders);
-  return order;
+async function updateOrderStatus(id, status) {
+  const { data, error } = await sb.from('orders').update({ status }).eq('id', id).select().maybeSingle();
+  if (error) throw error;
+  return data ? mapOrderRow(data) : null;
 }
 
-// ── 회원가입/로그인 (ponytail: 데모용. 비밀번호 평문 저장 — 실제 서비스엔 서버측 해싱 필요) ──
-function getCustomers() {
-  return JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOMERS)) || [];
+// ── 도장 쿠폰 (주문 횟수 기반, 홈 배너·마이페이지 공통) ──
+async function getStampProgress() {
+  const user = await getCurrentUser();
+  if (!user) return { loggedIn: false, count: 0, inCycle: 0, remaining: STAMP_GOAL, rewardsEarned: 0 };
+  const count = (await getOrders()).length;
+  const inCycle = count === 0 ? 0 : count % STAMP_GOAL || STAMP_GOAL;
+  return { loggedIn: true, count, inCycle, remaining: STAMP_GOAL - inCycle, rewardsEarned: Math.floor(count / STAMP_GOAL) };
 }
-function saveCustomers(list) {
-  localStorage.setItem(STORAGE_KEYS.CUSTOMERS, JSON.stringify(list));
-}
-function signup({ id, password, name, email, phone }) {
-  const customers = getCustomers();
-  if (customers.some((c) => c.id === id)) return { error: '이미 존재하는 아이디입니다.' };
-  customers.push({ id, password, name, email, phone });
-  saveCustomers(customers);
-  return { success: true };
-}
-function login(id, password) {
-  const customer = getCustomers().find((c) => c.id === id && c.password === password);
-  if (!customer) return { error: '아이디 또는 비밀번호가 올바르지 않습니다.' };
-  localStorage.setItem(STORAGE_KEYS.SESSION, id);
-  return { success: true };
-}
-function logout() {
-  localStorage.removeItem(STORAGE_KEYS.SESSION);
-}
-function getCurrentUser() {
-  const id = localStorage.getItem(STORAGE_KEYS.SESSION);
-  if (!id) return null;
-  return getCustomers().find((c) => c.id === id) || null;
+function renderStampDots(filled, total = STAMP_GOAL) {
+  return Array.from({ length: total }, (_, i) => `<span class="stamp-dot ${i < filled ? 'is-filled' : ''}">${i < filled ? renderIcon('coffee') : ''}</span>`).join('');
 }
 
 // ── 상단 카트 뱃지 (topbar가 있는 페이지 공통) ──────
@@ -298,8 +335,8 @@ function initTheme() {
 }
 
 // ── 데스크톱 상단 내비 호버 드롭다운 내용 (실제 메뉴/장바구니/주문/로그인 데이터 재사용) ──
-function navMenuPanel() {
-  const menus = getMenus().filter((m) => !m.soldOut);
+async function navMenuPanel() {
+  const menus = (await getMenus()).filter((m) => !m.soldOut);
   const tiles = CATEGORIES.map((c) => {
     const sample = menus.find((m) => m.category === c.id);
     if (!sample) return '';
@@ -307,34 +344,37 @@ function navMenuPanel() {
   }).join('');
   return `<div class="cat-grid">${tiles}</div><a href="/menus/list.html" class="nav-panel__foot">전체 메뉴 보기 →</a>`;
 }
-function navCartPanel() {
-  const items = getCartDetailed();
+async function navCartPanel() {
+  const items = await getCartDetailed();
   if (!items.length) {
     return `<p class="nav-panel__empty">장바구니가 비어있습니다.</p><a href="/menus/list.html" class="nav-panel__foot">메뉴 보러가기 →</a>`;
   }
   const shown = items.slice(0, 3);
-  const lines = shown
-    .map(
-      (c) => `
-    <div class="cart-line">
+  const lines = (
+    await Promise.all(
+      shown.map(
+        async (c) => `
+    <a class="cart-line" href="/menus/detail?id=${c.menuId}">
       <img src="${c.menu.image}" alt="${c.menu.name}" />
       <div>
         <div class="cart-line__name">${c.menu.name}${c.qty > 1 ? ` x${c.qty}` : ''}</div>
-        <div class="cart-line__opt">${formatOptions(c.options) || ''}</div>
+        <div class="cart-line__opt">${(await formatOptions(c.options)) || ''}</div>
       </div>
       <div class="cart-line__price">${formatPrice(c.unitPrice * c.qty)}</div>
-    </div>`
+    </a>`
+      )
     )
-    .join('');
+  ).join('');
   const more = items.length > shown.length ? `<div class="cart-line__more">외 ${items.length - shown.length}건 더</div>` : '';
+  const total = await getCartTotal();
   return `
     ${lines}${more}
-    <div class="cart-total"><span>합계</span><b>${formatPrice(getCartTotal())}</b></div>
+    <div class="cart-total"><span>합계</span><b>${formatPrice(total)}</b></div>
     <a href="/basket/list.html" class="nav-panel__cta">장바구니 보기</a>
   `;
 }
-function navOrdersPanel() {
-  const orders = getOrders();
+async function navOrdersPanel() {
+  const orders = await getOrders();
   if (!orders.length) {
     return `<p class="nav-panel__empty">아직 주문이 없습니다.</p>`;
   }
@@ -342,19 +382,19 @@ function navOrdersPanel() {
     .slice(0, 2)
     .map(
       (o) => `
-    <div class="order-line">
+    <a class="order-line" href="/orders/detail?id=${o.id}">
       <div class="order-line__top">
         <span class="order-line__name">${o.items[0].name}${o.items.length > 1 ? ` 외 ${o.items.length - 1}건` : ''}</span>
         <span class="badge badge-status">${o.status}</span>
       </div>
       <div class="order-line__meta">${formatDate(o.createdAt)} · ${formatPrice(o.total)}</div>
-    </div>`
+    </a>`
     )
     .join('');
   return `${lines}<a href="/orders/list.html" class="nav-panel__foot">전체 주문내역 보기 →</a>`;
 }
-function navMyPanel() {
-  const user = getCurrentUser();
+async function navMyPanel() {
+  const user = await getCurrentUser();
   const profile = user
     ? `<div class="my-profile__name">${user.name}님</div><div class="my-profile__sub">${user.email}</div>`
     : `<div class="my-profile__name">게스트님</div><div class="my-profile__sub">로그인하고 더 많은 기능을</div>`;
@@ -393,8 +433,8 @@ function initDesktopNav() {
     const { panel } = links[i];
     if (!panel) return;
     const inner = item.querySelector('.nav-panel__inner');
-    item.addEventListener('mouseenter', () => { inner.innerHTML = panel(); });
-    item.addEventListener('focusin', () => { inner.innerHTML = panel(); });
+    item.addEventListener('mouseenter', async () => { inner.innerHTML = await panel(); });
+    item.addEventListener('focusin', async () => { inner.innerHTML = await panel(); });
   });
 
   const actions = topbar.querySelector('.topbar__actions');
