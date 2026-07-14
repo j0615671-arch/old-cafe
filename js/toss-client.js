@@ -1,3 +1,3 @@
 // 토스페이먼츠 클라이언트 키. 발급받은 테스트 클라이언트 키로 교체하세요.
 // (클라이언트 키는 공개돼도 되는 값입니다 — 시크릿 키만 절대 공개 금지, 그건 Edge Function에만 둡니다.)
-const TOSS_CLIENT_KEY = 'test_ck_여기에_본인의_테스트_클라이언트_키';
+const TOSS_CLIENT_KEY = 'test_ck_oEjb0gm23PWLgaBaZeKW8pGwBJn5';
