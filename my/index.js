@@ -65,4 +65,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const mileageBalance = await getMileageBalance();
   if (mileageBalance > 0) document.getElementById('mileageCount').textContent = formatPrice(mileageBalance);
+
+  const user = await getCurrentUser();
+  if (user?.isSubscribed) document.getElementById('subStatusLabel').textContent = '구독 중';
 });

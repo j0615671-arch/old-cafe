@@ -11,6 +11,7 @@
 
 .cart-summary { padding: var(--space-4); margin-top: var(--space-4); }
 .cart-summary__row { display: flex; justify-content: space-between; font-weight: 700; font-size: 1.05rem; margin-bottom: var(--space-4); }
+.cart-summary__sub { font-size: 0.8rem; color: var(--color-brown-700); font-weight: 600; margin: calc(var(--space-4) * -1) 0 var(--space-4); }
 .cart-summary__mileage { font-size: 0.8rem; color: var(--color-text-muted); margin: calc(var(--space-4) * -1) 0 var(--space-4); }
 .cart-summary__mileage a { color: var(--color-brown-700); font-weight: 600; }
 .cart-summary__stamp { font-size: 0.8rem; color: var(--color-text-muted); margin: calc(var(--space-4) * -1) 0 var(--space-4); }

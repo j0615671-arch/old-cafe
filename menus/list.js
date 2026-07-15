@@ -8,10 +8,21 @@ function renderCategoryTabs() {
     .join('');
 }
 
+function matchesSearch(menu, term) {
+  if (!term) return true;
+  const categoryName = CATEGORIES.find((c) => c.id === menu.category)?.name || '';
+  const haystack = `${menu.name} ${menu.description || ''} ${categoryName}`.toLowerCase();
+  return term
+    .toLowerCase()
+    .split(/\s+/)
+    .filter(Boolean)
+    .every((word) => haystack.includes(word));
+}
+
 async function renderMenuGrid() {
   const menus = (await getMenus())
     .filter((m) => activeCategory === 'all' || m.category === activeCategory)
-    .filter((m) => m.name.toLowerCase().includes(searchTerm.toLowerCase()));
+    .filter((m) => matchesSearch(m, searchTerm));
   const grid = document.getElementById('menuGrid');
   if (!menus.length) {
     grid.innerHTML = `<div class="empty-state"><div class="empty-state__icon">${renderIcon('menu')}</div><p>검색 결과가 없습니다.</p></div>`;

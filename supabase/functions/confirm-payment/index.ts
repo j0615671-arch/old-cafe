@@ -1,5 +1,6 @@
 // 토스페이먼츠 결제 승인을 서버(Edge Function)에서만 처리.
 // 시크릿 키가 브라우저에 절대 노출되지 않도록 이 함수 안에서만 사용함.
+// purpose에 따라 승인 후 하는 일이 다름: topup(마일리지 충전) / order(카드로 메뉴 주문) / subscription(구독 결제)
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 
 const TOSS_SECRET_KEY = Deno.env.get('TOSS_SECRET_KEY') ?? '';
@@ -65,8 +66,38 @@ Deno.serve(async (req) => {
       return json({ error: tossData.message || '결제 승인에 실패했습니다.' }, 400);
     }
 
-    // 4. 승인 성공 → 결제 상태 갱신 + 마일리지 적립
     await admin.from('payments').update({ status: 'confirmed' }).eq('order_id', orderId);
+
+    // 4. purpose별 후처리
+    if (pending.purpose === 'order') {
+      const { data: newOrder, error: orderErr } = await admin
+        .from('orders')
+        .insert({ customer_id: user.id, items: pending.items, total: pending.amount, status: '접수완료', payment_method: 'card' })
+        .select()
+        .single();
+      if (orderErr) return json({ error: '주문 생성에 실패했습니다.' }, 500);
+
+      const earn = Math.round(pending.amount * 0.05);
+      const { data: profile } = await admin.from('profiles').select('mileage_balance').eq('id', user.id).single();
+      await admin
+        .from('profiles')
+        .update({ mileage_balance: (profile?.mileage_balance ?? 0) + earn })
+        .eq('id', user.id);
+
+      return json({ success: true, orderId: newOrder.id });
+    }
+
+    if (pending.purpose === 'subscription') {
+      const months = pending.items?.plan === 'yearly' ? 12 : 1;
+      const { data: profile } = await admin.from('profiles').select('subscribed_until').eq('id', user.id).single();
+      const base = profile?.subscribed_until && new Date(profile.subscribed_until) > new Date() ? new Date(profile.subscribed_until) : new Date();
+      base.setMonth(base.getMonth() + months);
+      await admin.from('profiles').update({ subscribed_until: base.toISOString() }).eq('id', user.id);
+
+      return json({ success: true, subscribedUntil: base.toISOString() });
+    }
+
+    // 기본값: 마일리지 충전
     const { data: profile } = await admin.from('profiles').select('mileage_balance').eq('id', user.id).single();
     const newBalance = (profile?.mileage_balance ?? 0) + amount;
     await admin.from('profiles').update({ mileage_balance: newBalance }).eq('id', user.id);

@@ -32,14 +32,20 @@ async function render() {
     )
   ).join('');
 
-  const total = await getCartTotal();
+  const rawTotal = await getCartTotal();
   const user = await getCurrentUser();
+  const total = applySubscriptionDiscount(user, rawTotal);
   const canPayWithMileage = user && user.mileageBalance >= total;
   const stampProgress = user ? await getStampProgress() : null;
   const canRedeemStamp = stampProgress && stampProgress.availableRewards > 0;
   summaryEl.innerHTML = `
     <div class="card cart-summary">
       <div class="cart-summary__row"><span>총 금액</span><span>${formatPrice(total)}</span></div>
+      ${
+        user?.isSubscribed
+          ? `<div class="cart-summary__sub">구독 회원 10% 할인 적용됨 (원래 ${formatPrice(rawTotal)})</div>`
+          : ''
+      }
       ${
         user
           ? `<div class="cart-summary__mileage">보유 마일리지 ${formatPrice(user.mileageBalance)}${canPayWithMileage ? '' : ' · 부족하면 <a href="../mileage/">충전하기</a>'}</div>`
@@ -52,22 +58,36 @@ async function render() {
       }
       ${
         user
-          ? `<div class="cart-summary__earn">주문하기 선택 시 마일리지 ${formatPrice(Math.round(total * MILEAGE_EARN_RATE))} 적립 예정</div>`
+          ? `<div class="cart-summary__earn">일반결제 선택 시 마일리지 ${formatPrice(Math.round(total * MILEAGE_EARN_RATE))} 적립 예정</div>`
           : ''
       }
-      ${canPayWithMileage ? `<button id="mileageBtn" class="btn btn-secondary btn-block">마일리지로 결제</button>` : ''}
+      ${canPayWithMileage ? `<button id="mileageBtn" class="btn btn-secondary btn-block">마일리지로 주문하기</button>` : ''}
       ${canRedeemStamp ? `<button id="stampBtn" class="btn btn-secondary btn-block">도장 리워드로 무료 주문</button>` : ''}
-      <button id="orderBtn" class="btn btn-primary btn-block">주문하기</button>
+      <button id="orderBtn" class="btn btn-primary btn-block">일반결제로 주문하기</button>
     </div>
   `;
 
   document.getElementById('orderBtn').addEventListener('click', async () => {
-    const order = await createOrder();
-    if (order) {
-      location.href = `../orders/detail?id=${order.id}`;
+    if (!(await getCurrentUser())) {
+      location.href = '../auth/login.html';
       return;
     }
-    if (!(await getCurrentUser())) location.href = '../auth/login.html';
+    try {
+      const pending = await createOrderPayment();
+      if (!pending) return;
+      const tossPayments = TossPayments(TOSS_CLIENT_KEY);
+      const payment = tossPayments.payment({ customerKey: TossPayments.ANONYMOUS });
+      await payment.requestPayment({
+        method: 'CARD',
+        amount: { currency: 'KRW', value: pending.amount },
+        orderId: pending.orderId,
+        orderName: `해피해피 용's 카페 주문`,
+        successUrl: `${location.origin}/orders/pay-success`,
+        failUrl: `${location.origin}/orders/pay-fail`,
+      });
+    } catch (err) {
+      alert(err.message || '결제 요청 중 오류가 발생했습니다.');
+    }
   });
 
   const mileageBtn = document.getElementById('mileageBtn');

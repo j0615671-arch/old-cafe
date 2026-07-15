@@ -3,29 +3,31 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>장바구니 - 해피해피 용's 카페</title>
+<title>구독 - 해피해피 용's 카페</title>
 <link rel="stylesheet" href="../css/variables.css" />
-<link rel="stylesheet" href="list.css" />
+<link rel="stylesheet" href="index.css" />
 </head>
 <body>
 <header class="topbar">
-  <div class="topbar__title" data-icon="cart">장바구니</div>
-  <div class="topbar__actions">
-    <a href="../my/" class="topbar__account" data-icon="user"></a>
-  </div>
+  <a href="../my/" class="topbar__back">←</a>
+  <div class="topbar__title">구독</div>
 </header>
 
 <div class="container">
-  <div id="cartItems"></div>
-  <div id="cartSummary"></div>
+  <div class="card sub-status" id="subStatus"></div>
+
+  <h2 class="section-title">구독 상품 선택</h2>
+  <div id="planList" class="plan-list"></div>
+
+  <p class="mileage-note">* 발표/데모용 테스트 결제입니다. 실제 카드 대금이 청구되지 않고, 매달 자동으로 다시 청구되지도 않습니다.</p>
 </div>
 
 <nav class="bottomnav">
   <a class="bottomnav__item" href="../index.html">홈</a>
   <a class="bottomnav__item" href="../menus/list.html">메뉴</a>
-  <a class="bottomnav__item is-active" href="list.html">장바구니</a>
+  <a class="bottomnav__item" href="../basket/list.html">장바구니</a>
   <a class="bottomnav__item" href="../orders/list.html">주문내역</a>
-  <a class="bottomnav__item" href="../my/">마이</a>
+  <a class="bottomnav__item is-active" href="../my/">마이</a>
 </nav>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -34,6 +36,6 @@
 <script src="../js/toss-client.js"></script>
 <script src="../js/data.js"></script>
 <script src="../js/utils.js"></script>
-<script src="list.js"></script>
+<script src="index.js"></script>
 </body>
 </html>

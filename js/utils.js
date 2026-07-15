@@ -21,6 +21,8 @@ const ICONS = {
   alert: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 16h.01"/></svg>',
   loader: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>',
   wallet: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7H4a1 1 0 0 0-1 1v9a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-3"/><path d="M3 8V6a2 2 0 0 1 2-2h11v4"/><path d="M17 13h4v3h-4a1.5 1.5 0 0 1 0-3Z"/></svg>',
+  star: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 14.7 9l6 .9-4.4 4.2 1 6-5.3-2.8-5.3 2.8 1-6L3.3 9.9l6-.9Z"/></svg>',
+  users: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
 };
 function renderIcon(name) {
   return ICONS[name] || '';
@@ -55,7 +57,7 @@ function mapBeanRow(row) {
   return { id: row.id, name: row.name, origin: row.origin, image: row.image, note: row.note, menuId: row.menu_id };
 }
 function mapOrderRow(row) {
-  return { id: row.id, items: row.items, total: row.total, status: row.status, createdAt: row.created_at };
+  return { id: row.id, customerId: row.customer_id, items: row.items, total: row.total, status: row.status, createdAt: row.created_at };
 }
 
 // ── 메뉴 (Supabase, 페이지 로드당 캐시) ──────────────
@@ -241,7 +243,7 @@ async function getCurrentUser() {
   if (!user) return null;
   const { data: profile } = await sb
     .from('profiles')
-    .select('username, name, phone, is_admin, mileage_balance, stamp_rewards_used')
+    .select('username, name, phone, is_admin, mileage_balance, stamp_rewards_used, subscribed_until')
     .eq('id', user.id)
     .single();
   if (!profile) return null;
@@ -254,7 +256,13 @@ async function getCurrentUser() {
     isAdmin: profile.is_admin,
     mileageBalance: profile.mileage_balance,
     stampRewardsUsed: profile.stamp_rewards_used ?? 0,
+    subscribedUntil: profile.subscribed_until,
+    isSubscribed: !!profile.subscribed_until && new Date(profile.subscribed_until) > new Date(),
   };
+}
+// 구독 회원은 10% 할인 (SUBSCRIPTION_DISCOUNT_RATE, js/data.js와 값 맞춰야 함)
+function applySubscriptionDiscount(user, total) {
+  return user?.isSubscribed ? total - Math.round(total * SUBSCRIPTION_DISCOUNT_RATE) : total;
 }
 
 // ── 마일리지 충전(토스페이먼츠) / 마일리지로 결제 ──────────
@@ -266,6 +274,19 @@ async function createPendingPayment(orderId, amount) {
   const user = await getCurrentUser();
   if (!user) throw new Error('로그인이 필요합니다.');
   const { error } = await sb.from('payments').insert({ customer_id: user.uid, order_id: orderId, amount, status: 'pending' });
+  if (error) throw error;
+}
+async function createSubscriptionPayment(orderId, amount, plan) {
+  const user = await getCurrentUser();
+  if (!user) throw new Error('로그인이 필요합니다.');
+  const { error } = await sb.from('payments').insert({
+    customer_id: user.uid,
+    order_id: orderId,
+    amount,
+    status: 'pending',
+    purpose: 'subscription',
+    items: { plan },
+  });
   if (error) throw error;
 }
 // Edge Function 호출 공통 처리. 실패 시 supabase-js가 뭉뚱그리는 기본 에러 대신,
@@ -319,6 +340,26 @@ async function guardAdmin() {
     location.href = '/';
   }
 }
+async function getMembers() {
+  const { data, error } = await sb.rpc('admin_list_members');
+  if (error) throw error;
+  return data.map((m) => ({
+    uid: m.id,
+    email: m.email,
+    id: m.username,
+    name: m.name,
+    phone: m.phone,
+    mileageBalance: m.mileage_balance,
+    isAdmin: m.is_admin,
+    subscribedUntil: m.subscribed_until,
+    createdAt: m.created_at,
+  }));
+}
+async function adjustMemberMileage(userId, amount) {
+  const { data, error } = await sb.rpc('admin_adjust_mileage', { p_user_id: userId, p_amount: amount });
+  if (error) throw new Error(error.message);
+  return data;
+}
 
 // ── 주문 (로그인 필수) ──────────────────────────────
 async function getOrders() {
@@ -348,23 +389,33 @@ async function buildOrderItems() {
     options: c.options,
   }));
 }
-async function createOrder() {
+// 장바구니를 카드(토스)로 즉시 결제 — 결제 대기 기록만 만들고, 실제 주문 생성은 결제 승인 시 서버에서 처리
+async function createOrderPayment() {
   const user = await getCurrentUser();
   if (!user) return null;
   const items = await buildOrderItems();
   if (!items.length) return null;
-  const total = items.reduce((sum, i) => sum + i.price * i.qty, 0);
-  const { data, error } = await sb.rpc('create_order_and_earn_mileage', { p_items: items, p_total: total });
+  const rawTotal = items.reduce((sum, i) => sum + i.price * i.qty, 0);
+  const total = applySubscriptionDiscount(user, rawTotal);
+  const orderId = `order-${generateId()}`;
+  const { error } = await sb.from('payments').insert({
+    customer_id: user.uid,
+    order_id: orderId,
+    amount: total,
+    status: 'pending',
+    purpose: 'order',
+    items,
+  });
   if (error) throw error;
-  clearCart();
-  return mapOrderRow(data);
+  return { orderId, amount: total };
 }
 async function createOrderWithMileage() {
   const user = await getCurrentUser();
   if (!user) return null;
   const items = await buildOrderItems();
   if (!items.length) return null;
-  const total = items.reduce((sum, i) => sum + i.price * i.qty, 0);
+  const rawTotal = items.reduce((sum, i) => sum + i.price * i.qty, 0);
+  const total = applySubscriptionDiscount(user, rawTotal);
   const order = await payWithMileage(items, total);
   clearCart();
   return order;
@@ -374,9 +425,11 @@ async function createOrderWithStampReward() {
   if (!user) return null;
   const items = await buildOrderItems();
   if (!items.length) return null;
-  const total = items.reduce((sum, i) => sum + i.price * i.qty, 0);
-  const discount = Math.min(...items.map((i) => i.price));
-  const order = await redeemStampReward(items, total, discount);
+  const rawTotal = items.reduce((sum, i) => sum + i.price * i.qty, 0);
+  const stampDiscount = Math.min(...items.map((i) => i.price));
+  const afterStamp = rawTotal - stampDiscount;
+  const discount = rawTotal - applySubscriptionDiscount(user, afterStamp);
+  const order = await redeemStampReward(items, rawTotal, discount);
   clearCart();
   return order;
 }

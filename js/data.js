@@ -36,3 +36,6 @@ const STAMP_GOAL = 10;
 // 일반 주문 시 결제 금액의 이만큼을 마일리지로 적립 (마일리지 결제·도장 리워드 주문은 적립 제외)
 const MILEAGE_EARN_RATE = 0.05;
 
+// 구독 회원 할인율 (구독 중이면 주문 금액에서 이만큼 할인)
+const SUBSCRIPTION_DISCOUNT_RATE = 0.1;
+
