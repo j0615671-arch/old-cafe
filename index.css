@@ -1,17 +1,62 @@
-.hero { position: relative; padding: var(--space-5) 0 var(--space-6); border-bottom: 1px solid var(--color-border); }
-.hero__slide { display: none; }
+/* 히어로만 시안 2(케임브리지 블루 + 리코리스 + 카마인) 톤을 미리 적용 — 사이트 전체 톤은 아직 그대로 */
+.hero {
+  --hero-licorice: #1a1110;
+  --hero-carmine: #960018;
+  --hero-carmine-bright: #ff5470;
+  position: relative;
+  overflow: hidden;
+  height: min(78vh, 620px);
+}
+#heroSlides { height: 100%; }
+.hero__slide {
+  display: none;
+  position: relative;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+}
 .hero__slide.is-active { display: block; }
-.hero__grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: var(--space-5); align-items: center; }
-.hero__eyebrow { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.16em; color: var(--color-brown-700); margin-bottom: var(--space-3); }
-.hero__title { font-family: var(--font-display); font-size: 2rem; font-weight: 600; line-height: 1.2; color: var(--color-brown-900); }
-.hero__desc { margin-top: var(--space-3); color: var(--color-text-muted); font-size: 0.95rem; max-width: 30em; }
-.hero__photo img { width: 100%; height: 260px; border-radius: var(--radius-md); object-fit: cover; }
-.hero__controls { display: flex; align-items: center; justify-content: center; gap: var(--space-4); margin-top: var(--space-4); }
-.hero__arrow { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--color-border); background: var(--color-surface); color: var(--color-brown-900); cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; }
-.hero__arrow:hover { background: var(--color-cream); }
+.hero__slide::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(26,17,16,.82) 0%, rgba(26,17,16,.5) 45%, rgba(26,17,16,.18) 100%);
+}
+.hero__content {
+  position: relative;
+  z-index: 2;
+  max-width: 560px;
+  height: 100%;
+  margin: 0 auto;
+  padding: 0 var(--space-5);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-3);
+  color: #f3efe6;
+}
+.hero__eyebrow { font-size: 0.74rem; font-weight: 700; letter-spacing: 0.16em; color: var(--hero-carmine-bright); }
+.hero__title { font-family: var(--font-display); font-size: clamp(1.9rem, 4vw, 2.6rem); font-weight: 600; line-height: 1.2; }
+.hero__desc { color: rgba(243,239,230,.82); font-size: 0.95rem; max-width: 30em; }
+.hero__cta { align-self: flex-start; margin-top: var(--space-2); background: var(--hero-carmine); color: #fff; }
+.hero__cta:hover { background: var(--hero-carmine-bright); color: var(--hero-licorice); }
+.hero__controls {
+  position: absolute;
+  z-index: 3;
+  left: 0; right: 0; bottom: var(--space-4);
+  display: flex; align-items: center; justify-content: center; gap: var(--space-4);
+}
+.hero__arrow {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(255,255,255,.15); color: #fff;
+  border: none; cursor: pointer; font-size: 1.1rem;
+  display: flex; align-items: center; justify-content: center;
+  backdrop-filter: blur(4px);
+}
+.hero__arrow:hover { background: var(--hero-carmine-bright); color: var(--hero-licorice); }
 .hero__dots { display: flex; gap: 8px; }
-.hero__dots button { width: 7px; height: 7px; border-radius: 50%; border: none; padding: 0; background: var(--color-brown-300); cursor: pointer; }
-.hero__dots button.is-active { background: var(--color-brown-700); width: 18px; border-radius: 4px; }
+.hero__dots button { width: 7px; height: 7px; border-radius: 50%; border: none; padding: 0; background: rgba(255,255,255,.4); cursor: pointer; }
+.hero__dots button.is-active { background: #fff; width: 18px; border-radius: 4px; }
 .section-title { font-family: var(--font-display); font-size: 1.15rem; font-weight: 600; color: var(--color-brown-900); margin-bottom: var(--space-3); }
 
 .stamp-banner { background: var(--color-cream); padding: var(--space-6) 0; margin-bottom: var(--space-6); }
@@ -49,7 +94,5 @@
 .bean-hero__note { font-size: 0.9rem; color: #fff; opacity: 0.9; line-height: 1.5; margin-bottom: var(--space-4); max-width: 340px; }
 
 @media (max-width: 640px) {
-  .hero__grid { grid-template-columns: 1fr; }
-  .hero__photo { order: -1; }
-  .hero__photo img { height: 200px; }
+  .hero { height: min(70vh, 480px); }
 }

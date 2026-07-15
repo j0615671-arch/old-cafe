@@ -10,15 +10,12 @@ async function renderHero() {
   document.getElementById('heroSlides').innerHTML = banners
     .map(
       (b, i) => `
-    <div class="hero__slide ${i === 0 ? 'is-active' : ''}">
-      <div class="container hero__grid">
-        <div class="hero__copy">
-          <div class="hero__eyebrow">COFFEE · TEA · ADE · DESSERT</div>
-          <h1 class="hero__title">${b.title}</h1>
-          ${b.description ? `<p class="hero__desc">${b.description}</p>` : ''}
-          <a href="${b.ctaLink}" class="btn btn-primary">${b.ctaLabel}</a>
-        </div>
-        <figure class="hero__photo"><img src="${b.image}" alt="${b.title}" /></figure>
+    <div class="hero__slide ${i === 0 ? 'is-active' : ''}" style="background-image:url('${b.image}')">
+      <div class="hero__content">
+        <div class="hero__eyebrow">COFFEE · TEA · ADE · DESSERT</div>
+        <h1 class="hero__title">${b.title}</h1>
+        ${b.description ? `<p class="hero__desc">${b.description}</p>` : ''}
+        <a href="${b.ctaLink}" class="btn hero__cta">${b.ctaLabel}</a>
       </div>
     </div>`
     )

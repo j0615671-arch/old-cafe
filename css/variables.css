@@ -364,10 +364,6 @@ h1, h2, h3, .section-title,
     border-bottom: 2px solid transparent;
   }
   .topbar__nav a.is-active { color: var(--color-brown-700); border-bottom-color: var(--color-brown-700); }
-  .hero { padding: var(--space-6) 0 72px; }
-  .hero__photo img { height: 420px; }
-  .hero__title { font-size: 3rem; }
-
   /* 상단 내비 호버 드롭다운 (메뉴/장바구니/주문내역/마이 미리보기) */
   .nav-item { position: relative; }
   .nav-panel {
