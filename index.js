@@ -1,3 +1,58 @@
+let heroIdx = 0;
+let heroTimer;
+async function renderHero() {
+  const banners = await getActiveHeroBanners();
+  if (!banners.length) {
+    document.getElementById('hero').hidden = true;
+    return;
+  }
+
+  document.getElementById('heroSlides').innerHTML = banners
+    .map(
+      (b, i) => `
+    <div class="hero__slide ${i === 0 ? 'is-active' : ''}">
+      <div class="container hero__grid">
+        <div class="hero__copy">
+          <div class="hero__eyebrow">COFFEE · TEA · ADE · DESSERT</div>
+          <h1 class="hero__title">${b.title}</h1>
+          ${b.description ? `<p class="hero__desc">${b.description}</p>` : ''}
+          <a href="${b.ctaLink}" class="btn btn-primary">${b.ctaLabel}</a>
+        </div>
+        <figure class="hero__photo"><img src="${b.image}" alt="${b.title}" /></figure>
+      </div>
+    </div>`
+    )
+    .join('');
+
+  const dotsEl = document.getElementById('heroDots');
+  dotsEl.innerHTML = banners.map((_, i) => `<button data-dot="${i}" class="${i === 0 ? 'is-active' : ''}"></button>`).join('');
+  dotsEl.hidden = banners.length < 2;
+  document.getElementById('heroPrev').hidden = banners.length < 2;
+  document.getElementById('heroNext').hidden = banners.length < 2;
+
+  const slides = document.querySelectorAll('.hero__slide');
+  function goHero(i) {
+    heroIdx = (i + banners.length) % banners.length;
+    slides.forEach((el, idx) => el.classList.toggle('is-active', idx === heroIdx));
+    dotsEl.querySelectorAll('button').forEach((d, idx) => d.classList.toggle('is-active', idx === heroIdx));
+  }
+  function startAutoplay() {
+    clearInterval(heroTimer);
+    if (banners.length > 1) heroTimer = setInterval(() => goHero(heroIdx + 1), 6000);
+  }
+  document.getElementById('heroPrev').addEventListener('click', () => { goHero(heroIdx - 1); startAutoplay(); });
+  document.getElementById('heroNext').addEventListener('click', () => { goHero(heroIdx + 1); startAutoplay(); });
+  dotsEl.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-dot]');
+    if (!btn) return;
+    goHero(Number(btn.dataset.dot));
+    startAutoplay();
+  });
+  document.getElementById('hero').addEventListener('mouseenter', () => clearInterval(heroTimer));
+  document.getElementById('hero').addEventListener('mouseleave', startAutoplay);
+  startAutoplay();
+}
+
 async function renderBeanOfDay() {
   const beans = await getBeans();
   const section = document.getElementById('beanOfDaySection');
@@ -41,6 +96,7 @@ async function renderStampBanner() {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+  renderHero();
   renderBeanOfDay();
   renderStampBanner();
 

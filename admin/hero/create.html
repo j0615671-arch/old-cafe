@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>히어로 배너 추가 - 해피해피 용's 카페 Admin</title>
+<link rel="stylesheet" href="../../css/variables.css" />
+<link rel="stylesheet" href="form.css" />
+</head>
+<body>
+<div class="admin-shell">
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar__title">해피해피 용's 카페 Admin</div>
+    <nav>
+      <a href="../" data-icon="dashboard">대시보드</a>
+      <a href="../menus/list.html" data-icon="menu">메뉴 관리</a>
+      <a href="../beans/list.html" data-icon="bean">원두 관리</a>
+      <a href="list.html" class="is-active" data-icon="dashboard">히어로 배너</a>
+      <a href="../orders/list.html" data-icon="receipt">주문 관리</a>
+      <a href="../members/list.html" data-icon="users">회원 관리</a>
+      <a href="../../index.html" data-icon="home">고객 화면</a>
+    </nav>
+  </aside>
+  <main class="admin-main">
+    <a href="list.html" class="back-link">← 배너 목록</a>
+    <h1>배너 추가</h1>
+    <form id="heroForm" class="card form-card">
+      <div class="field">
+        <label for="imageFile">배너 사진</label>
+        <input id="imageFile" type="file" accept="image/*" />
+        <img id="imagePreview" class="image-preview" hidden />
+        <input id="image" name="image" type="text" placeholder="또는 이미지 URL 직접 입력" required />
+      </div>
+      <div class="field">
+        <label for="title">제목</label>
+        <input id="title" name="title" type="text" placeholder="예: 진하게 내린 하루의 시작" required />
+      </div>
+      <div class="field">
+        <label for="description">설명</label>
+        <textarea id="description" name="description" placeholder="예: 갓 로스팅한 원두로 매일 아침 내리는 아메리카노"></textarea>
+      </div>
+      <div class="field">
+        <label for="ctaLabel">버튼 문구</label>
+        <input id="ctaLabel" name="ctaLabel" type="text" value="메뉴 보러가기" required />
+      </div>
+      <div class="field">
+        <label for="ctaLink">버튼 이동 링크</label>
+        <input id="ctaLink" name="ctaLink" type="text" value="menus/list.html" required />
+      </div>
+      <div class="field">
+        <label for="sortOrder">노출 순서 (작을수록 먼저)</label>
+        <input id="sortOrder" name="sortOrder" type="number" value="0" required />
+      </div>
+      <div class="field field-checkbox">
+        <label><input id="active" name="active" type="checkbox" checked /> 바로 노출하기</label>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">추가하기</button>
+    </form>
+  </main>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="../../js/supabase-client.js"></script>
+<script src="../../js/data.js"></script>
+<script src="../../js/utils.js"></script>
+<script src="create.js"></script>
+</body>
+</html>

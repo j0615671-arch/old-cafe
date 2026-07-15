@@ -143,6 +143,59 @@ async function deleteBean(id) {
   if ((await getFeaturedBeanId()) === id) await setFeaturedBeanId('');
 }
 
+// ── 홈 화면 히어로 배너 (관리자에서 CRUD) ──────────────
+function mapHeroBannerRow(row) {
+  return {
+    id: row.id,
+    image: row.image,
+    title: row.title,
+    description: row.description,
+    ctaLabel: row.cta_label,
+    ctaLink: row.cta_link,
+    sortOrder: row.sort_order,
+    active: row.active,
+  };
+}
+async function getHeroBanners() {
+  const { data, error } = await sb.from('hero_banners').select('*').order('sort_order');
+  if (error) throw error;
+  return data.map(mapHeroBannerRow);
+}
+async function getActiveHeroBanners() {
+  return (await getHeroBanners()).filter((b) => b.active);
+}
+async function getHeroBannerById(id) {
+  return (await getHeroBanners()).find((b) => b.id === id) || null;
+}
+async function addHeroBanner(banner) {
+  const { error } = await sb.from('hero_banners').insert({
+    image: banner.image,
+    title: banner.title,
+    description: banner.description || null,
+    cta_label: banner.ctaLabel || '메뉴 보러가기',
+    cta_link: banner.ctaLink || 'menus/list.html',
+    sort_order: banner.sortOrder ?? 0,
+    active: banner.active ?? true,
+  });
+  if (error) throw error;
+}
+async function updateHeroBanner(id, patch) {
+  const dbPatch = {};
+  if ('image' in patch) dbPatch.image = patch.image;
+  if ('title' in patch) dbPatch.title = patch.title;
+  if ('description' in patch) dbPatch.description = patch.description || null;
+  if ('ctaLabel' in patch) dbPatch.cta_label = patch.ctaLabel;
+  if ('ctaLink' in patch) dbPatch.cta_link = patch.ctaLink;
+  if ('sortOrder' in patch) dbPatch.sort_order = patch.sortOrder;
+  if ('active' in patch) dbPatch.active = patch.active;
+  const { error } = await sb.from('hero_banners').update(dbPatch).eq('id', id);
+  if (error) throw error;
+}
+async function deleteHeroBanner(id) {
+  const { error } = await sb.from('hero_banners').delete().eq('id', id);
+  if (error) throw error;
+}
+
 // ── 오늘의 추천 원두 (관리자가 직접 선택, 없으면 index.js에서 날짜로 자동 선택) ──
 async function getFeaturedBeanId() {
   const { data } = await sb.from('app_settings').select('value').eq('key', 'featured_bean_id').maybeSingle();
