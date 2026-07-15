@@ -1,18 +1,18 @@
-.profile-card { display: flex; align-items: center; gap: var(--space-4); padding: var(--space-5); margin-bottom: var(--space-4); }
+.profile-card { display: flex; align-items: center; gap: var(--space-4); padding: var(--space-6) var(--space-5); margin-bottom: var(--space-5); }
 .profile-card__emoji {
   flex-shrink: 0;
-  width: 56px;
-  height: 56px;
+  width: 68px;
+  height: 68px;
   border-radius: 50%;
   background: var(--color-cream);
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.profile-card__emoji .icon { width: 26px; height: 26px; color: var(--color-brown-700); }
+.profile-card__emoji .icon { width: 30px; height: 30px; color: var(--color-brown-700); }
 .profile-card__body { flex: 1; min-width: 0; }
-.profile-card__name { font-weight: 700; font-size: 1.1rem; }
-.profile-card__email { font-size: 0.8rem; color: var(--color-text-muted); margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.profile-card__name { font-family: var(--font-display); font-weight: 600; font-size: 1.3rem; }
+.profile-card__email { font-size: 0.82rem; color: var(--color-text-muted); margin-top: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .stamp-card { padding: var(--space-4); margin-bottom: var(--space-4); }
 .stamp-card__head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: var(--space-3); }

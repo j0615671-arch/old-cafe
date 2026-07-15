@@ -1,8 +1,8 @@
-.cart-item { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-4); margin-bottom: var(--space-3); }
-.cart-item__emoji { width: 48px; height: 48px; border-radius: var(--radius-sm); overflow: hidden; flex-shrink: 0; }
+.cart-item { display: flex; align-items: flex-start; gap: var(--space-4); padding: var(--space-5); margin-bottom: var(--space-3); }
+.cart-item__emoji { width: 76px; height: 76px; border-radius: var(--radius-md); overflow: hidden; flex-shrink: 0; }
 .cart-item__emoji img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .cart-item__body { flex: 1; }
-.cart-item__name { font-weight: 700; }
+.cart-item__name { font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; }
 .cart-item__options { color: var(--color-text-muted); font-size: 0.78rem; margin-top: 2px; }
 .cart-item__price { color: var(--color-text-muted); font-size: 0.85rem; margin-top: 2px; }
 .cart-item__price--was { text-decoration: line-through; opacity: 0.6; }
@@ -21,8 +21,8 @@
   font-size: 0.78rem;
 }
 
-.cart-summary { padding: var(--space-4); margin-top: var(--space-4); }
-.cart-summary__row { display: flex; justify-content: space-between; font-weight: 700; font-size: 1.05rem; margin-bottom: var(--space-4); }
+.cart-summary { padding: var(--space-5); margin-top: var(--space-5); }
+.cart-summary__row { display: flex; justify-content: space-between; align-items: baseline; font-family: var(--font-display); font-weight: 600; font-size: 1.3rem; margin-bottom: var(--space-4); }
 .cart-summary__sub { font-size: 0.8rem; color: var(--color-brown-700); font-weight: 600; margin: calc(var(--space-4) * -1) 0 var(--space-4); }
 .cart-summary__mileage { font-size: 0.8rem; color: var(--color-text-muted); margin: calc(var(--space-4) * -1) 0 var(--space-4); }
 .cart-summary__mileage a { color: var(--color-brown-700); font-weight: 600; }
