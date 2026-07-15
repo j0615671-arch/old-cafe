@@ -92,10 +92,45 @@ async function renderStampBanner() {
   }
 }
 
+function initHomeFaq() {
+  document.getElementById('homeFaqList').addEventListener('click', (e) => {
+    const q = e.target.closest('.faq-item__q');
+    if (!q) return;
+    const item = q.closest('.faq-item');
+    const willOpen = !item.classList.contains('is-open');
+    document.querySelectorAll('#homeFaqList .faq-item').forEach((it) => it.classList.remove('is-open'));
+    if (willOpen) item.classList.add('is-open');
+  });
+}
+
+function initHomeInquiry() {
+  document.getElementById('homeInquiryForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const user = await getCurrentUser();
+    if (!user) {
+      location.href = 'auth/login.html';
+      return;
+    }
+    try {
+      await addInquiry({
+        type: document.getElementById('homeType').value,
+        title: document.getElementById('homeTitle').value.trim(),
+        content: document.getElementById('homeContent').value.trim(),
+      });
+      e.target.reset();
+      alert('문의가 접수됐어요. 확인 후 답변드릴게요.');
+    } catch (err) {
+      alert(err.message || '문의 접수 중 오류가 발생했습니다.');
+    }
+  });
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   renderHero();
   renderBeanOfDay();
   renderStampBanner();
+  initHomeFaq();
+  initHomeInquiry();
 
   document.getElementById('searchForm').addEventListener('submit', (e) => {
     e.preventDefault();
