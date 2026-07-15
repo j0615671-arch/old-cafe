@@ -579,10 +579,20 @@ async function navMyPanel() {
   const profile = user
     ? `<div class="my-profile__name">${user.name}님</div><div class="my-profile__sub">${user.email}</div>`
     : `<div class="my-profile__name">게스트님</div><div class="my-profile__sub">로그인하고 더 많은 기능을</div>`;
+  let summary = '';
+  if (user) {
+    const unusedCoupons = (await getCoupons()).filter((c) => c.status === 'unused').length;
+    summary = `
+      <a href="/my/" class="my-summary">
+        <div class="my-summary__item"><span class="my-summary__value">${formatPrice(user.mileageBalance)}</span><span class="my-summary__label">마일리지</span></div>
+        <div class="my-summary__item"><span class="my-summary__value">${unusedCoupons}장</span><span class="my-summary__label">쿠폰</span></div>
+        <div class="my-summary__item"><span class="my-summary__value">${user.isSubscribed ? '이용 중' : '안 함'}</span><span class="my-summary__label">구독</span></div>
+      </a>`;
+  }
   const links = user
     ? `<div class="my-links"><a href="/basket/list.html">장바구니</a><a href="/orders/list.html">주문 내역</a></div>`
     : `<a href="/auth/login.html" class="nav-panel__cta">로그인</a>`;
-  return `<div class="my-profile"><div class="my-avatar">${renderIcon('user')}</div><div>${profile}</div></div>${links}`;
+  return `<div class="my-profile"><div class="my-avatar">${renderIcon('user')}</div><div>${profile}</div></div>${summary}${links}`;
 }
 
 // ── 데스크톱 상단 내비게이션 (고객 페이지 전용, 하단 탭바 대신 1024px 이상에서 CSS로 노출) ──
