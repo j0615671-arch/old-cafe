@@ -1,5 +1,7 @@
 async function render() {
-  const orders = await getAllOrders();
+  // 픽업완료(마지막 단계)된 주문은 처리할 게 없으니 맨 아래로 내림
+  const isDone = (o) => o.status === ORDER_STATUSES[ORDER_STATUSES.length - 1];
+  const orders = (await getAllOrders()).sort((a, b) => (isDone(a) === isDone(b) ? 0 : isDone(a) ? 1 : -1));
   const container = document.getElementById('orderList');
 
   if (!orders.length) {

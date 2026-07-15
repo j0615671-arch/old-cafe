@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     container.innerHTML = `
       <div class="empty-state">
         <div class="empty-state__icon">${renderIcon('coffee')}</div>
-        <p>아직 보유한 쿠폰이 없어요.<br />도장 10개를 모으면 쿠폰이 자동으로 생겨요.</p>
+        <p>아직 아무 쿠폰이 없어요.</p>
       </div>`;
     return;
   }
