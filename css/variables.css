@@ -3,6 +3,7 @@
 html, body { height: 100%; }
 a { color: inherit; text-decoration: none; }
 button, input, select, textarea { font: inherit; color: inherit; }
+button { border: none; background: none; padding: 0; cursor: pointer; }
 img { max-width: 100%; display: block; }
 ul, ol { list-style: none; }
 
