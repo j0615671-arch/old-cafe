@@ -20,7 +20,7 @@ ul, ol { list-style: none; }
 
 /* 디자인 토큰 — 케임브리지 블루 + 리코리스 + 카마인 (승인된 디자인 시안 2번) */
 :root {
-  --color-bg: #eef3ee;
+  --color-bg: #aecab5;
   --color-surface: #f8fbf8;
   --color-surface-glass: rgba(248, 251, 248, 0.92);
   --color-border: rgba(26, 17, 16, 0.14);

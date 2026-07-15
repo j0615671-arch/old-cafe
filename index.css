@@ -120,7 +120,7 @@
 
 /* FAQ / 1:1 문의 (홈 화면 하단 섹션) */
 .section-block { padding: var(--space-6) 0; }
-.section-block--surface { background: var(--color-surface); }
+.section-block--surface { background: var(--color-cream); }
 .faq-list { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; }
 .faq-item { border-bottom: 1px solid var(--color-border); }
 .faq-item__q { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: var(--space-4) 2px; font-weight: 700; font-size: 0.95rem; text-align: left; cursor: pointer; }
