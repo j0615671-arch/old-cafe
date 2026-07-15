@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', async () => {
+async function render() {
   const orders = await getOrders();
   const container = document.getElementById('orderList');
 
@@ -20,9 +20,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     </div>`
     )
     .join('');
+}
 
-  container.addEventListener('click', (e) => {
+document.addEventListener('DOMContentLoaded', async () => {
+  await render();
+
+  document.getElementById('orderList').addEventListener('click', (e) => {
     const card = e.target.closest('.order-card');
     if (card) location.href = `detail?id=${card.dataset.id}`;
   });
+
+  const user = await getCurrentUser();
+  if (!user) return;
+  sb.channel('orders-list-changes')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'orders', filter: `customer_id=eq.${user.uid}` }, render)
+    .subscribe();
 });

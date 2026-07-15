@@ -35,6 +35,8 @@ async function render() {
   const total = await getCartTotal();
   const user = await getCurrentUser();
   const canPayWithMileage = user && user.mileageBalance >= total;
+  const stampProgress = user ? await getStampProgress() : null;
+  const canRedeemStamp = stampProgress && stampProgress.availableRewards > 0;
   summaryEl.innerHTML = `
     <div class="card cart-summary">
       <div class="cart-summary__row"><span>총 금액</span><span>${formatPrice(total)}</span></div>
@@ -43,7 +45,18 @@ async function render() {
           ? `<div class="cart-summary__mileage">보유 마일리지 ${formatPrice(user.mileageBalance)}${canPayWithMileage ? '' : ' · 부족하면 <a href="../mileage/">충전하기</a>'}</div>`
           : ''
       }
+      ${
+        canRedeemStamp
+          ? `<div class="cart-summary__stamp">사용 가능한 도장 리워드 ${stampProgress.availableRewards}개 · 가장 저렴한 메뉴 1개 무료</div>`
+          : ''
+      }
+      ${
+        user
+          ? `<div class="cart-summary__earn">주문하기 선택 시 마일리지 ${formatPrice(Math.round(total * MILEAGE_EARN_RATE))} 적립 예정</div>`
+          : ''
+      }
       ${canPayWithMileage ? `<button id="mileageBtn" class="btn btn-secondary btn-block">마일리지로 결제</button>` : ''}
+      ${canRedeemStamp ? `<button id="stampBtn" class="btn btn-secondary btn-block">도장 리워드로 무료 주문</button>` : ''}
       <button id="orderBtn" class="btn btn-primary btn-block">주문하기</button>
     </div>
   `;
@@ -65,6 +78,19 @@ async function render() {
         if (order) location.href = `../orders/detail?id=${order.id}`;
       } catch (err) {
         alert(err.message || '결제에 실패했습니다.');
+        await render();
+      }
+    });
+  }
+
+  const stampBtn = document.getElementById('stampBtn');
+  if (stampBtn) {
+    stampBtn.addEventListener('click', async () => {
+      try {
+        const order = await createOrderWithStampReward();
+        if (order) location.href = `../orders/detail?id=${order.id}`;
+      } catch (err) {
+        alert(err.message || '리워드 사용에 실패했습니다.');
         await render();
       }
     });

@@ -6,9 +6,8 @@
 .tier-card {
   display: flex; align-items: center; justify-content: space-between;
   padding: var(--space-4) var(--space-5);
-  cursor: pointer;
 }
 .tier-card__amount { font-family: var(--font-display); font-weight: 600; font-size: 1.15rem; }
-.tier-card__btn { pointer-events: none; }
+.tier-card__actions { display: flex; gap: var(--space-2); }
 
 .mileage-note { margin-top: var(--space-5); font-size: 0.8rem; color: var(--color-text-muted); text-align: center; }

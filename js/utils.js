@@ -239,7 +239,11 @@ async function getCurrentUser() {
     data: { user },
   } = await sb.auth.getUser();
   if (!user) return null;
-  const { data: profile } = await sb.from('profiles').select('username, name, phone, is_admin, mileage_balance').eq('id', user.id).single();
+  const { data: profile } = await sb
+    .from('profiles')
+    .select('username, name, phone, is_admin, mileage_balance, stamp_rewards_used')
+    .eq('id', user.id)
+    .single();
   if (!profile) return null;
   return {
     uid: user.id,
@@ -249,6 +253,7 @@ async function getCurrentUser() {
     phone: profile.phone,
     isAdmin: profile.is_admin,
     mileageBalance: profile.mileage_balance,
+    stampRewardsUsed: profile.stamp_rewards_used ?? 0,
   };
 }
 
@@ -263,17 +268,39 @@ async function createPendingPayment(orderId, amount) {
   const { error } = await sb.from('payments').insert({ customer_id: user.uid, order_id: orderId, amount, status: 'pending' });
   if (error) throw error;
 }
-async function confirmPayment({ orderId, paymentKey, amount }) {
+// Edge Function 호출 공통 처리. 실패 시 supabase-js가 뭉뚱그리는 기본 에러 대신,
+// 함수가 실제로 응답한 JSON의 error 메시지를 최대한 꺼내서 보여줌.
+async function invokeEdgeFunction(name, body) {
   const {
     data: { session },
   } = await sb.auth.getSession();
-  const { data, error } = await sb.functions.invoke('confirm-payment', {
-    body: { orderId, paymentKey, amount },
+  const { data, error } = await sb.functions.invoke(name, {
+    body,
     headers: { Authorization: `Bearer ${session?.access_token}` },
   });
-  if (error) throw error;
+  if (error) {
+    if (error.context?.json) {
+      try {
+        const errBody = await error.context.json();
+        throw new Error(errBody.error || error.message);
+      } catch (parseErr) {
+        if (parseErr instanceof Error && parseErr.message !== error.message) throw parseErr;
+        throw error;
+      }
+    }
+    throw error;
+  }
   if (data?.error) throw new Error(data.error);
   return data;
+}
+async function confirmPayment({ orderId, paymentKey, amount }) {
+  return invokeEdgeFunction('confirm-payment', { orderId, paymentKey, amount });
+}
+async function createKakaoPayment(amount) {
+  return invokeEdgeFunction('kakao-payment-ready', { amount, origin: location.origin });
+}
+async function confirmKakaoPayment({ orderId, pgToken }) {
+  return invokeEdgeFunction('kakao-payment-approve', { orderId, pgToken });
 }
 async function payWithMileage(items, total) {
   const { data, error } = await sb.rpc('pay_with_mileage', { p_items: items, p_total: total });
@@ -327,11 +354,7 @@ async function createOrder() {
   const items = await buildOrderItems();
   if (!items.length) return null;
   const total = items.reduce((sum, i) => sum + i.price * i.qty, 0);
-  const { data, error } = await sb
-    .from('orders')
-    .insert({ customer_id: user.uid, items, total, status: ORDER_STATUSES[0] })
-    .select()
-    .single();
+  const { data, error } = await sb.rpc('create_order_and_earn_mileage', { p_items: items, p_total: total });
   if (error) throw error;
   clearCart();
   return mapOrderRow(data);
@@ -346,6 +369,17 @@ async function createOrderWithMileage() {
   clearCart();
   return order;
 }
+async function createOrderWithStampReward() {
+  const user = await getCurrentUser();
+  if (!user) return null;
+  const items = await buildOrderItems();
+  if (!items.length) return null;
+  const total = items.reduce((sum, i) => sum + i.price * i.qty, 0);
+  const discount = Math.min(...items.map((i) => i.price));
+  const order = await redeemStampReward(items, total, discount);
+  clearCart();
+  return order;
+}
 async function updateOrderStatus(id, status) {
   const { data, error } = await sb.from('orders').update({ status }).eq('id', id).select().maybeSingle();
   if (error) throw error;
@@ -355,10 +389,23 @@ async function updateOrderStatus(id, status) {
 // ── 도장 쿠폰 (주문 횟수 기반, 홈 배너·마이페이지 공통) ──
 async function getStampProgress() {
   const user = await getCurrentUser();
-  if (!user) return { loggedIn: false, count: 0, inCycle: 0, remaining: STAMP_GOAL, rewardsEarned: 0 };
+  if (!user) return { loggedIn: false, count: 0, inCycle: 0, remaining: STAMP_GOAL, rewardsEarned: 0, availableRewards: 0 };
   const count = (await getOrders()).length;
   const inCycle = count === 0 ? 0 : count % STAMP_GOAL || STAMP_GOAL;
-  return { loggedIn: true, count, inCycle, remaining: STAMP_GOAL - inCycle, rewardsEarned: Math.floor(count / STAMP_GOAL) };
+  const rewardsEarned = Math.floor(count / STAMP_GOAL);
+  return {
+    loggedIn: true,
+    count,
+    inCycle,
+    remaining: STAMP_GOAL - inCycle,
+    rewardsEarned,
+    availableRewards: Math.max(rewardsEarned - user.stampRewardsUsed, 0),
+  };
+}
+async function redeemStampReward(items, total, discount) {
+  const { data, error } = await sb.rpc('redeem_stamp_reward', { p_items: items, p_total: total, p_discount: discount });
+  if (error) throw new Error(error.message.includes('도장') ? error.message : '리워드 사용에 실패했습니다.');
+  return mapOrderRow(data);
 }
 function renderStampDots(filled, total = STAMP_GOAL) {
   return Array.from({ length: total }, (_, i) => `<span class="stamp-dot ${i < filled ? 'is-filled' : ''}">${i < filled ? renderIcon('coffee') : ''}</span>`).join('');

@@ -1,6 +1,4 @@
-document.addEventListener('DOMContentLoaded', async () => {
-  const id = getQueryParam('id');
-  const order = id && (await getOrderById(id));
+async function render(order) {
   const container = document.getElementById('orderDetail');
 
   if (!order) {
@@ -35,4 +33,17 @@ document.addEventListener('DOMContentLoaded', async () => {
       <div class="order-total"><span>총 결제금액</span><span>${formatPrice(order.total)}</span></div>
     </div>
   `;
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const id = getQueryParam('id');
+  const order = id && (await getOrderById(id));
+  await render(order);
+  if (!id || !order) return;
+
+  sb.channel(`order-detail-${id}`)
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders', filter: `id=eq.${id}` }, async () => {
+      render(await getOrderById(id));
+    })
+    .subscribe();
 });
