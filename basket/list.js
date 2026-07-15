@@ -56,13 +56,19 @@ async function render() {
           </select>
         </div>`
             : '';
+        const appliedCouponId = couponSelections[c.lineId];
+        const priceHtml = appliedCouponId
+          ? `<div class="cart-item__price"><span class="cart-item__price--was">${formatPrice(c.unitPrice)}</span> → <span class="cart-item__price--now">${formatPrice(
+              Math.max(c.unitPrice - (await couponDiscountAmount([{ couponId: appliedCouponId, benefit }])), 0)
+            )}</span></div>`
+          : `<div class="cart-item__price">${formatPrice(c.unitPrice)}</div>`;
         return `
     <div class="card cart-item" data-line-id="${c.lineId}">
       <div class="cart-item__emoji"><img src="${c.menu.image}" alt="${c.menu.name}" /></div>
       <div class="cart-item__body">
         <div class="cart-item__name">${c.menu.name}</div>
         ${optionsText ? `<div class="cart-item__options">${optionsText}</div>` : ''}
-        <div class="cart-item__price">${formatPrice(c.unitPrice)}</div>
+        ${priceHtml}
         <div class="cart-item__qty">
           <button data-minus>−</button>
           <span>${c.qty}</span>

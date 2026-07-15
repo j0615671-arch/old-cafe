@@ -5,6 +5,8 @@
 .cart-item__name { font-weight: 700; }
 .cart-item__options { color: var(--color-text-muted); font-size: 0.78rem; margin-top: 2px; }
 .cart-item__price { color: var(--color-text-muted); font-size: 0.85rem; margin-top: 2px; }
+.cart-item__price--was { text-decoration: line-through; opacity: 0.6; }
+.cart-item__price--now { color: var(--color-brown-700); font-weight: 700; }
 .cart-item__qty { display: flex; align-items: center; gap: var(--space-2); margin-top: var(--space-2); }
 .cart-item__qty button { width: 26px; height: 26px; border-radius: 999px; border: 1px solid var(--color-border); background: var(--color-surface); cursor: pointer; }
 .cart-item__remove { color: var(--color-danger); font-size: 0.8rem; cursor: pointer; align-self: flex-start; }
