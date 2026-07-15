@@ -438,6 +438,19 @@ async function updateOrderStatus(id, status) {
   if (error) throw error;
   return data ? mapOrderRow(data) : null;
 }
+// ── 주문 상태 진행 막대 (관리자·고객 화면 공통) ──────
+function nextOrderStatus(status) {
+  const idx = ORDER_STATUSES.indexOf(status);
+  return idx >= 0 && idx < ORDER_STATUSES.length - 1 ? ORDER_STATUSES[idx + 1] : null;
+}
+function renderStatusSteps(status) {
+  const idx = ORDER_STATUSES.indexOf(status);
+  return `<div class="step-bar">${ORDER_STATUSES.map((_, i) => `<span class="step ${i <= idx ? 'is-on' : ''}"></span>`).join('')}</div>`;
+}
+function renderStatusStepLabels(status) {
+  const idx = ORDER_STATUSES.indexOf(status);
+  return `<div class="step-bar__labels">${ORDER_STATUSES.map((s, i) => `<span class="${i <= idx ? 'is-on' : ''}">${s}</span>`).join('')}</div>`;
+}
 
 // ── 도장 쿠폰 (주문 횟수 기반, 홈 배너·마이페이지 공통) ──
 async function getStampProgress() {

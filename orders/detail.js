@@ -25,7 +25,9 @@ async function render(order) {
 
   container.innerHTML = `
     <div class="order-status">
-      <span class="badge badge-status">${order.status}</span>
+      ${renderStatusSteps(order.status)}
+      ${renderStatusStepLabels(order.status)}
+      <div class="order-status__message">${STATUS_FRIENDLY_MESSAGE[order.status] || order.status}</div>
       <div class="order-status__date">${formatDate(order.createdAt)}</div>
     </div>
     <div class="card" style="padding: var(--space-4);">

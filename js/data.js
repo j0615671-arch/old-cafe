@@ -9,6 +9,17 @@ const CATEGORIES = [
 
 const ORDER_STATUSES = ['접수완료', '제조중', '제조완료', '픽업완료'];
 
+// 다음 단계로 넘기는 버튼 문구 (관리자 화면)
+const STATUS_NEXT_ACTION = { 접수완료: '제조 시작', 제조중: '제조완료 처리', 제조완료: '픽업완료 처리' };
+
+// 지금 상태를 손님에게 보여줄 때 쓰는 문구 (고객 화면)
+const STATUS_FRIENDLY_MESSAGE = {
+  접수완료: '주문을 접수했어요',
+  제조중: '지금 만들고 있어요',
+  제조완료: '픽업할 준비가 됐어요',
+  픽업완료: '픽업이 완료됐어요',
+};
+
 // 카테고리별로 어떤 주문 옵션을 보여줄지 (디저트는 옵션 없음)
 const MENU_OPTIONS = {
   coffee: { size: true, temperature: true, shot: true, syrup: true, bean: true },

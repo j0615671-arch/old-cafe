@@ -24,24 +24,26 @@ async function render() {
     )
   ).join('');
 
+  const next = nextOrderStatus(order.status);
   container.innerHTML = `
     <div class="card order-card">
       <div class="order-card__meta">${formatDate(order.createdAt)}</div>
       ${itemRows}
       <div class="order-total"><span>총 결제금액</span><span>${formatPrice(order.total)}</span></div>
-      <div class="status-control">
-        <select id="statusSelect">
-          ${ORDER_STATUSES.map((s) => `<option value="${s}" ${s === order.status ? 'selected' : ''}>${s}</option>`).join('')}
-        </select>
-        <button id="saveStatus" class="btn btn-primary">변경</button>
-      </div>
+      ${renderStatusSteps(order.status)}
+      ${renderStatusStepLabels(order.status)}
+      <button id="advanceBtn" class="btn ${next ? 'btn-primary' : 'btn-secondary'} btn-block" ${next ? '' : 'disabled'}>
+        ${next ? STATUS_NEXT_ACTION[order.status] : '완료됨'}
+      </button>
     </div>
   `;
 
-  document.getElementById('saveStatus').addEventListener('click', async () => {
-    await updateOrderStatus(order.id, document.getElementById('statusSelect').value);
-    render();
-  });
+  if (next) {
+    document.getElementById('advanceBtn').addEventListener('click', async () => {
+      await updateOrderStatus(order.id, next);
+      render();
+    });
+  }
 }
 
 document.addEventListener('DOMContentLoaded', render);

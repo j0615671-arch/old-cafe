@@ -243,6 +243,14 @@ h1, h2, h3, .section-title,
 .badge { display: inline-block; padding: 2px 9px; border-radius: var(--radius-sm); font-size: 0.68rem; font-weight: 700; letter-spacing: 0.02em; }
 .badge-soldout { background: transparent; color: var(--color-danger); border: 1px solid var(--color-danger); }
 .badge-status { background: var(--color-cream); color: var(--color-brown-700); }
+
+/* 주문 상태 진행 막대 (관리자 주문 목록/상세, 고객 주문 상세 공통) */
+.step-bar { display: flex; align-items: center; gap: 4px; }
+.step-bar .step { flex: 1; height: 4px; border-radius: 999px; background: var(--color-brown-300); }
+.step-bar .step.is-on { background: var(--color-brown-700); }
+.step-bar__labels { display: flex; justify-content: space-between; margin-top: var(--space-1); }
+.step-bar__labels span { font-size: 0.68rem; color: var(--color-text-muted); }
+.step-bar__labels span.is-on { color: var(--color-brown-700); font-weight: 700; }
 .badge-featured { background: transparent; color: var(--color-warning); border: 1px solid var(--color-warning); }
 
 /* 도장 쿠폰 (index 배너, my 페이지 공용) */
