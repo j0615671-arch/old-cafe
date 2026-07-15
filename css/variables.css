@@ -295,13 +295,10 @@ h1, h2, h3, .section-title,
   .menu-list { grid-template-columns: repeat(4, 1fr); gap: var(--space-5); }
 }
 
-/* 홈 화면 추천 메뉴는 좁은 화면에서도 훑어보기 좋게 2열 사진 그리드로 */
-.menu-teaser { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-3); }
-.menu-teaser__item { position: relative; }
-.menu-teaser__photo { width: 100%; aspect-ratio: 4 / 3; border-radius: var(--radius-sm); object-fit: cover; }
-.menu-teaser__cat { font-family: var(--font-display); font-size: 0.64rem; font-weight: 700; letter-spacing: 0.08em; color: var(--color-brown-700); text-transform: uppercase; margin-top: var(--space-2); }
-.menu-teaser__name { font-weight: 700; margin-top: 2px; }
-.menu-teaser__price { font-weight: 600; font-size: 0.9rem; color: var(--color-text-muted); margin-top: 1px; }
+/* 공통: 시안 목업의 eyebrow / section-head (홈 화면 시그니처 섹션에서 사용) */
+.eyebrow { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-brown-700); margin-bottom: 10px; }
+.section-head { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap; margin-bottom: var(--space-5); }
+.section-head p { color: var(--color-text-muted); max-width: 380px; font-size: 0.88rem; line-height: 1.6; }
 
 /* 빈 상태 */
 .empty-state {

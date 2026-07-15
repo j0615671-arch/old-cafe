@@ -105,15 +105,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const available = (await getMenus()).filter((m) => !m.soldOut);
   const manuallyFeatured = available.filter((m) => m.featured);
-  const featured = (manuallyFeatured.length ? manuallyFeatured : available).slice(0, 4);
+  const featured = (manuallyFeatured.length ? manuallyFeatured : available).slice(0, 3);
   document.getElementById('featuredMenus').innerHTML = featured
     .map(
       (m) => `
-    <a class="menu-teaser__item" href="menus/detail?id=${m.id}">
-      <img class="menu-teaser__photo" src="${m.image}" alt="${m.name}" loading="lazy" />
-      <div class="menu-teaser__cat">${m.category}</div>
-      <div class="menu-teaser__name">${m.name}</div>
-      <div class="menu-teaser__price">${formatPrice(m.price)}</div>
+    <a class="promo-card" href="menus/detail?id=${m.id}">
+      <div class="promo-card__img"><img src="${m.image}" alt="${m.name}" loading="lazy" /></div>
+      <div class="promo-card__name">${m.name}</div>
+      <div class="promo-card__desc">${m.description || ''}</div>
+      <div class="promo-card__price">${formatPrice(m.price)}</div>
     </a>`
     )
     .join('');
