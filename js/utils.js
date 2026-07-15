@@ -243,7 +243,7 @@ async function getCurrentUser() {
   if (!user) return null;
   const { data: profile } = await sb
     .from('profiles')
-    .select('username, name, phone, is_admin, mileage_balance, stamp_rewards_used, subscribed_until')
+    .select('username, name, phone, is_admin, mileage_balance, subscribed_until')
     .eq('id', user.id)
     .single();
   if (!profile) return null;
@@ -255,7 +255,6 @@ async function getCurrentUser() {
     phone: profile.phone,
     isAdmin: profile.is_admin,
     mileageBalance: profile.mileage_balance,
-    stampRewardsUsed: profile.stamp_rewards_used ?? 0,
     subscribedUntil: profile.subscribed_until,
     isSubscribed: !!profile.subscribed_until && new Date(profile.subscribed_until) > new Date(),
   };
@@ -323,9 +322,9 @@ async function createKakaoPayment(amount) {
 async function confirmKakaoPayment({ orderId, pgToken }) {
   return invokeEdgeFunction('kakao-payment-approve', { orderId, pgToken });
 }
-async function payWithMileage(items, total) {
-  const { data, error } = await sb.rpc('pay_with_mileage', { p_items: items, p_total: total });
-  if (error) throw new Error(error.message.includes('마일리지') ? error.message : '결제에 실패했습니다.');
+async function payWithMileage(items, total, couponUsages = []) {
+  const { data, error } = await sb.rpc('pay_with_mileage', { p_items: items, p_total: total, p_coupon_usages: couponUsages });
+  if (error) throw new Error(error.message.includes('마일리지') || error.message.includes('쿠폰') ? error.message : '결제에 실패했습니다.');
   return mapOrderRow(data);
 }
 
@@ -390,13 +389,14 @@ async function buildOrderItems() {
   }));
 }
 // 장바구니를 카드(토스)로 즉시 결제 — 결제 대기 기록만 만들고, 실제 주문 생성은 결제 승인 시 서버에서 처리
-async function createOrderPayment() {
+async function createOrderPayment(couponUsages = []) {
   const user = await getCurrentUser();
   if (!user) return null;
   const items = await buildOrderItems();
   if (!items.length) return null;
   const rawTotal = items.reduce((sum, i) => sum + i.price * i.qty, 0);
-  const total = applySubscriptionDiscount(user, rawTotal);
+  const couponDiscount = await couponDiscountAmount(couponUsages);
+  const total = applySubscriptionDiscount(user, rawTotal - couponDiscount);
   const orderId = `order-${generateId()}`;
   const { error } = await sb.from('payments').insert({
     customer_id: user.uid,
@@ -405,31 +405,19 @@ async function createOrderPayment() {
     status: 'pending',
     purpose: 'order',
     items,
+    coupon_usages: couponUsages,
   });
   if (error) throw error;
   return { orderId, amount: total };
 }
-async function createOrderWithMileage() {
+async function createOrderWithMileage(couponUsages = []) {
   const user = await getCurrentUser();
   if (!user) return null;
   const items = await buildOrderItems();
   if (!items.length) return null;
   const rawTotal = items.reduce((sum, i) => sum + i.price * i.qty, 0);
   const total = applySubscriptionDiscount(user, rawTotal);
-  const order = await payWithMileage(items, total);
-  clearCart();
-  return order;
-}
-async function createOrderWithStampReward() {
-  const user = await getCurrentUser();
-  if (!user) return null;
-  const items = await buildOrderItems();
-  if (!items.length) return null;
-  const rawTotal = items.reduce((sum, i) => sum + i.price * i.qty, 0);
-  const stampDiscount = Math.min(...items.map((i) => i.price));
-  const afterStamp = rawTotal - stampDiscount;
-  const discount = rawTotal - applySubscriptionDiscount(user, afterStamp);
-  const order = await redeemStampReward(items, rawTotal, discount);
+  const order = await payWithMileage(items, total, couponUsages);
   clearCart();
   return order;
 }
@@ -455,26 +443,40 @@ function renderStatusStepLabels(status) {
 // ── 도장 쿠폰 (주문 횟수 기반, 홈 배너·마이페이지 공통) ──
 async function getStampProgress() {
   const user = await getCurrentUser();
-  if (!user) return { loggedIn: false, count: 0, inCycle: 0, remaining: STAMP_GOAL, rewardsEarned: 0, availableRewards: 0 };
+  if (!user) return { loggedIn: false, count: 0, inCycle: 0, remaining: STAMP_GOAL };
   const count = (await getOrders()).length;
   const inCycle = count === 0 ? 0 : count % STAMP_GOAL || STAMP_GOAL;
-  const rewardsEarned = Math.floor(count / STAMP_GOAL);
-  return {
-    loggedIn: true,
-    count,
-    inCycle,
-    remaining: STAMP_GOAL - inCycle,
-    rewardsEarned,
-    availableRewards: Math.max(rewardsEarned - user.stampRewardsUsed, 0),
-  };
-}
-async function redeemStampReward(items, total, discount) {
-  const { data, error } = await sb.rpc('redeem_stamp_reward', { p_items: items, p_total: total, p_discount: discount });
-  if (error) throw new Error(error.message.includes('도장') ? error.message : '리워드 사용에 실패했습니다.');
-  return mapOrderRow(data);
+  return { loggedIn: true, count, inCycle, remaining: STAMP_GOAL - inCycle };
 }
 function renderStampDots(filled, total = STAMP_GOAL) {
   return Array.from({ length: total }, (_, i) => `<span class="stamp-dot ${i < filled ? 'is-filled' : ''}">${i < filled ? renderIcon('coffee') : ''}</span>`).join('');
+}
+
+// ── 쿠폰함 (도장 10개 채우면 자동 발급, 주문 시 메뉴별로 1장씩 선택 사용) ──
+async function getCoupons() {
+  const user = await getCurrentUser();
+  if (!user) return [];
+  const { data, error } = await sb.from('coupons').select('*').eq('customer_id', user.uid).order('created_at', { ascending: false });
+  if (error) throw error;
+  return data.map((c) => ({
+    id: c.id,
+    status: c.status,
+    usedBenefit: c.used_benefit,
+    createdAt: c.created_at,
+    usedAt: c.used_at,
+  }));
+}
+// 이 카트 라인이 쿠폰을 쓸 수 있는 메뉴(아메리카노 기본 사이즈 · 초코칩 쿠키)인지
+function couponBenefitForLine(line) {
+  if (line.menu.name === '아메리카노' && (!line.options?.size || line.options.size === 'tall')) return 'americano';
+  if (line.menu.name === '초코칩 쿠키') return 'cookie';
+  return null;
+}
+async function couponDiscountAmount(couponUsages) {
+  if (!couponUsages?.length) return 0;
+  const menus = await getMenus();
+  const price = (name) => menus.find((m) => m.name === name)?.price || 0;
+  return couponUsages.reduce((sum, u) => sum + (u.benefit === 'americano' ? price('아메리카노') : price('초코칩 쿠키')), 0);
 }
 
 // ── 상단 카트 뱃지 (topbar가 있는 페이지 공통) ──────

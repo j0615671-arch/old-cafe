@@ -1,0 +1,6 @@
+.coupon-card { padding: var(--space-4); margin-bottom: var(--space-3); }
+.coupon-card__top { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-2); }
+.coupon-card__name { font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; }
+.coupon-card__desc { font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: var(--space-2); }
+.coupon-card__meta { font-size: 0.75rem; color: var(--color-text-muted); }
+.coupon-card.is-used { opacity: 0.55; }

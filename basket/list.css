@@ -8,12 +8,21 @@
 .cart-item__qty { display: flex; align-items: center; gap: var(--space-2); margin-top: var(--space-2); }
 .cart-item__qty button { width: 26px; height: 26px; border-radius: 999px; border: 1px solid var(--color-border); background: var(--color-surface); cursor: pointer; }
 .cart-item__remove { color: var(--color-danger); font-size: 0.8rem; cursor: pointer; align-self: flex-start; }
+.cart-item__coupon { margin-top: var(--space-2); }
+.cart-item__coupon select {
+  width: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 0.78rem;
+}
 
 .cart-summary { padding: var(--space-4); margin-top: var(--space-4); }
 .cart-summary__row { display: flex; justify-content: space-between; font-weight: 700; font-size: 1.05rem; margin-bottom: var(--space-4); }
 .cart-summary__sub { font-size: 0.8rem; color: var(--color-brown-700); font-weight: 600; margin: calc(var(--space-4) * -1) 0 var(--space-4); }
 .cart-summary__mileage { font-size: 0.8rem; color: var(--color-text-muted); margin: calc(var(--space-4) * -1) 0 var(--space-4); }
 .cart-summary__mileage a { color: var(--color-brown-700); font-weight: 600; }
-.cart-summary__stamp { font-size: 0.8rem; color: var(--color-text-muted); margin: calc(var(--space-4) * -1) 0 var(--space-4); }
 .cart-summary__earn { font-size: 0.8rem; color: var(--color-text-muted); margin: calc(var(--space-4) * -1) 0 var(--space-4); }
 .cart-summary .btn + .btn { margin-top: var(--space-2); }

@@ -35,7 +35,7 @@ async function renderStampCard() {
   if (!progress.loggedIn) {
     descEl.textContent = '로그인하면 주문할 때마다 도장이 쌓여요.';
   } else if (progress.remaining === 0) {
-    descEl.textContent = '도장을 다 모았어요! 매장에서 무료 음료로 교환해보세요.';
+    descEl.textContent = '도장을 다 모았어요! 쿠폰함에 쿠폰이 발급됐어요.';
   } else {
     descEl.textContent = `${progress.remaining}개만 더 모으면 음료 1잔이 무료예요.`;
   }
@@ -68,4 +68,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const user = await getCurrentUser();
   if (user?.isSubscribed) document.getElementById('subStatusLabel').textContent = '구독 중';
+
+  if (user) {
+    const unusedCoupons = (await getCoupons()).filter((c) => c.status === 'unused').length;
+    if (unusedCoupons > 0) document.getElementById('couponCount').textContent = `${unusedCoupons}장`;
+  }
 });

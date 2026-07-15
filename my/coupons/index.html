@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>쿠폰함 - 해피해피 용's 카페</title>
+<link rel="stylesheet" href="../../css/variables.css" />
+<link rel="stylesheet" href="index.css" />
+</head>
+<body>
+<header class="topbar">
+  <a href="../" class="topbar__back">←</a>
+  <div class="topbar__title">쿠폰함</div>
+</header>
+
+<div class="container">
+  <div id="couponList"></div>
+</div>
+
+<nav class="bottomnav">
+  <a class="bottomnav__item" href="../../index.html">홈</a>
+  <a class="bottomnav__item" href="../../menus/list.html">메뉴</a>
+  <a class="bottomnav__item" href="../../basket/list.html">장바구니</a>
+  <a class="bottomnav__item" href="../../orders/list.html">주문내역</a>
+  <a class="bottomnav__item is-active" href="../">마이</a>
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="../../js/supabase-client.js"></script>
+<script src="../../js/data.js"></script>
+<script src="../../js/utils.js"></script>
+<script src="index.js"></script>
+</body>
+</html>

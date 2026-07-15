@@ -70,12 +70,32 @@ Deno.serve(async (req) => {
 
     // 4. purpose별 후처리
     if (pending.purpose === 'order') {
+      // 결제는 이미 승인됐으므로, 쿠폰 검증에 실패해도 주문 생성은 계속 진행함 (결제만 되고 주문이 안 생기는 상황을 피하기 위함)
+      if (pending.coupon_usages?.length) {
+        await admin.rpc('validate_and_apply_coupons', {
+          p_customer_id: user.id,
+          p_items: pending.items,
+          p_coupon_usages: pending.coupon_usages,
+        });
+      }
+
       const { data: newOrder, error: orderErr } = await admin
         .from('orders')
         .insert({ customer_id: user.id, items: pending.items, total: pending.amount, status: '접수완료', payment_method: 'card' })
         .select()
         .single();
       if (orderErr) return json({ error: '주문 생성에 실패했습니다.' }, 500);
+
+      if (pending.coupon_usages?.length) {
+        await admin
+          .from('coupons')
+          .update({ used_order_id: newOrder.id })
+          .in(
+            'id',
+            pending.coupon_usages.map((u: { couponId: string }) => u.couponId)
+          )
+          .is('used_order_id', null);
+      }
 
       const earn = Math.round(pending.amount * 0.05);
       const { data: profile } = await admin.from('profiles').select('mileage_balance').eq('id', user.id).single();
