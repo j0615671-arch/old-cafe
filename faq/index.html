@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>자주 묻는 질문 - 해피해피 용's 카페</title>
+<link rel="stylesheet" href="../css/variables.css" />
+<link rel="stylesheet" href="index.css" />
+</head>
+<body>
+<header class="topbar">
+  <a href="../index.html" class="topbar__back">←</a>
+  <div class="topbar__title">FAQ</div>
+</header>
+
+<div class="container">
+  <h1 class="section-title">자주 묻는 질문</h1>
+  <div class="faq-list" id="faqList">
+    <div class="faq-item is-open">
+      <button class="faq-item__q">영업시간이 어떻게 되나요? <span class="plus">+</span></button>
+      <div class="faq-item__a">매일 오전 9시부터 오후 9시까지 운영해요. (공휴일 동일)</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-item__q">마일리지는 어떻게 쌓이나요? <span class="plus">+</span></button>
+      <div class="faq-item__a">일반결제로 주문하시면 결제 금액의 5%가 마일리지로 자동 적립돼요.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-item__q">도장 쿠폰은 어디서 확인하나요? <span class="plus">+</span></button>
+      <div class="faq-item__a">마이페이지 &gt; 쿠폰함에서 확인할 수 있어요. 도장 10개를 모으면 자동으로 발급돼요.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-item__q">포장 주문도 되나요? <span class="plus">+</span></button>
+      <div class="faq-item__a">네, 장바구니에서 주문하신 뒤 매장에서 픽업하시면 돼요.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-item__q">구독은 어떻게 이용하나요? <span class="plus">+</span></button>
+      <div class="faq-item__a">마이페이지 &gt; 구독에서 월간·연간 구독을 결제하면, 이후 모든 주문에 10% 할인이 자동 적용돼요.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-item__q">더 궁금한 점은 어디에 물어보나요? <span class="plus">+</span></button>
+      <div class="faq-item__a"><a href="../contact/">1:1 문의하기</a>에서 남겨주시면 확인 후 답변드릴게요.</div>
+    </div>
+  </div>
+</div>
+
+<nav class="bottomnav">
+  <a class="bottomnav__item" href="../index.html">홈</a>
+  <a class="bottomnav__item" href="../menus/list.html">메뉴</a>
+  <a class="bottomnav__item" href="../basket/list.html">장바구니</a>
+  <a class="bottomnav__item" href="../orders/list.html">주문내역</a>
+  <a class="bottomnav__item" href="../my/">마이</a>
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="../js/supabase-client.js"></script>
+<script src="../js/data.js"></script>
+<script src="../js/utils.js"></script>
+<script src="index.js"></script>
+</body>
+</html>

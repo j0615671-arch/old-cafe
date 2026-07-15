@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>1:1 문의하기 - 해피해피 용's 카페</title>
+<link rel="stylesheet" href="../css/variables.css" />
+<link rel="stylesheet" href="index.css" />
+</head>
+<body>
+<header class="topbar">
+  <a href="../index.html" class="topbar__back">←</a>
+  <div class="topbar__title">1:1 문의하기</div>
+</header>
+
+<div class="container">
+  <form id="inquiryForm" class="card form-card">
+    <div class="field">
+      <label for="type">문의 유형</label>
+      <select id="type" name="type">
+        <option>일반 문의</option>
+        <option>주문/결제 문의</option>
+        <option>이벤트 문의</option>
+        <option>기타</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="title">제목</label>
+      <input id="title" name="title" type="text" placeholder="제목을 입력해주세요" required />
+    </div>
+    <div class="field">
+      <label for="content">내용</label>
+      <textarea id="content" name="content" placeholder="문의 내용을 입력해주세요" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary btn-block">문의 보내기</button>
+  </form>
+
+  <h2 class="section-title">지난 문의 내역</h2>
+  <div id="inquiryList"></div>
+</div>
+
+<nav class="bottomnav">
+  <a class="bottomnav__item" href="../index.html">홈</a>
+  <a class="bottomnav__item" href="../menus/list.html">메뉴</a>
+  <a class="bottomnav__item" href="../basket/list.html">장바구니</a>
+  <a class="bottomnav__item" href="../orders/list.html">주문내역</a>
+  <a class="bottomnav__item" href="../my/">마이</a>
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="../js/supabase-client.js"></script>
+<script src="../js/data.js"></script>
+<script src="../js/utils.js"></script>
+<script src="index.js"></script>
+</body>
+</html>

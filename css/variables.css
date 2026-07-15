@@ -18,20 +18,20 @@ ul, ol { list-style: none; }
   font-display: swap;
 }
 
-/* 디자인 토큰 — 로스팅 전 원두의 세이지 그린을 포인트로, 나머지는 차분한 잉크/페이퍼 톤 */
+/* 디자인 토큰 — 케임브리지 블루 + 리코리스 + 카마인 (승인된 디자인 시안 2번) */
 :root {
-  --color-bg: #f7f4ee;
-  --color-surface: #fdfbf7;
-  --color-surface-glass: rgba(253, 251, 247, 0.92);
-  --color-border: rgba(33, 28, 23, 0.14);
-  --color-brown-900: #211c17;
-  --color-brown-700: #4f5d3a;
-  --color-brown-500: #6f7c58;
-  --color-brown-300: #dbe0d1;
-  --color-cream: #eef0e6;
-  --color-text: #211c17;
-  --color-text-muted: rgba(33, 28, 23, 0.55);
-  --color-danger: #a8532e;
+  --color-bg: #eef3ee;
+  --color-surface: #f8fbf8;
+  --color-surface-glass: rgba(248, 251, 248, 0.92);
+  --color-border: rgba(26, 17, 16, 0.14);
+  --color-brown-900: #1a1110;
+  --color-brown-700: #960018;
+  --color-brown-500: #b23a4f;
+  --color-brown-300: #e3c3c8;
+  --color-cream: #dce8e0;
+  --color-text: #1a1110;
+  --color-text-muted: rgba(26, 17, 16, 0.55);
+  --color-danger: #a8472e;
   --color-success: #3f7a4e;
   --color-warning: #c78a2e;
 
@@ -39,8 +39,8 @@ ul, ol { list-style: none; }
   --radius-md: 8px;
   --radius-lg: 12px;
 
-  --shadow-glass: 0 1px 2px rgba(33, 28, 23, 0.05);
-  --shadow-sm: 0 1px 2px rgba(33, 28, 23, 0.06);
+  --shadow-glass: 0 1px 2px rgba(26, 17, 16, 0.05);
+  --shadow-sm: 0 1px 2px rgba(26, 17, 16, 0.06);
 
   --space-1: 4px;
   --space-2: 8px;
@@ -52,24 +52,24 @@ ul, ol { list-style: none; }
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Pretendard", "Apple SD Gothic Neo", sans-serif;
   --font-display: 'Fraunces', var(--font-sans);
 
-  /* 관리자 사이드바는 테마와 무관하게 항상 고정 잉크 톤 */
-  --color-sidebar-bg: #211c17;
-  --color-sidebar-text: #f3efe6;
-  --color-sidebar-link: rgba(243, 239, 230, 0.65);
+  /* 관리자 사이드바 · 헤더 · 푸터는 테마와 무관하게 항상 리코리스 톤 고정 */
+  --color-sidebar-bg: #1a1110;
+  --color-sidebar-text: #eee8e6;
+  --color-sidebar-link: rgba(238, 232, 230, 0.65);
 }
 
 :root[data-theme="dark"] {
-  --color-bg: #17130f;
-  --color-surface: #1f1a15;
-  --color-surface-glass: rgba(31, 26, 21, 0.92);
-  --color-border: rgba(243, 239, 230, 0.16);
-  --color-brown-900: #f3efe6;
-  --color-brown-700: #9fb384;
-  --color-brown-500: #7c8a68;
-  --color-brown-300: rgba(159, 179, 132, 0.2);
+  --color-bg: #17110f;
+  --color-surface: #201613;
+  --color-surface-glass: rgba(32, 22, 19, 0.92);
+  --color-border: rgba(238, 232, 230, 0.16);
+  --color-brown-900: #eee8e6;
+  --color-brown-700: #ff5470;
+  --color-brown-500: #e0455f;
+  --color-brown-300: rgba(255, 84, 112, 0.2);
   --color-cream: rgba(255, 255, 255, 0.06);
-  --color-text: #f3efe6;
-  --color-text-muted: rgba(243, 239, 230, 0.55);
+  --color-text: #eee8e6;
+  --color-text-muted: rgba(238, 232, 230, 0.55);
   --color-danger: #d98a5f;
   --color-success: #7fbf8f;
   --color-warning: #e0a94a;
@@ -311,6 +311,24 @@ h1, h2, h3, .section-title,
 }
 .empty-state__icon { margin-bottom: var(--space-3); }
 .empty-state__icon .icon { width: 40px; height: 40px; color: var(--color-text-muted); }
+
+/* 공통 푸터 (고객 페이지, js/utils.js에서 자동 삽입) */
+.site-footer { background: var(--color-sidebar-bg); color: var(--color-sidebar-text); padding: var(--space-6) var(--space-4) var(--space-4); }
+.site-footer__top { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: var(--space-5); padding-bottom: var(--space-5); border-bottom: 1px solid rgba(238, 232, 230, 0.14); }
+.site-footer__brand { font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; margin-bottom: var(--space-3); }
+.site-footer__info { font-size: 0.82rem; line-height: 1.9; color: var(--color-sidebar-link); }
+.site-footer__sns { display: flex; gap: var(--space-2); margin-top: var(--space-3); }
+.site-footer__sns a { width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgba(238, 232, 230, 0.25); display: flex; align-items: center; justify-content: center; font-size: 0.68rem; color: var(--color-sidebar-text); }
+.site-footer__sns a:hover { background: var(--color-brown-700); border-color: var(--color-brown-700); color: #fff; }
+.site-footer__col h4 { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-sidebar-text); margin-bottom: var(--space-3); }
+.site-footer__col p, .site-footer__col a { display: block; font-size: 0.82rem; line-height: 2; color: var(--color-sidebar-link); }
+.site-footer__col a:hover { color: var(--color-brown-700); }
+.site-footer__bottom { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--space-2); padding-top: var(--space-4); font-size: 0.74rem; color: var(--color-sidebar-link); }
+.site-footer__legal { display: flex; gap: var(--space-4); }
+.site-footer__legal a:hover { color: var(--color-brown-700); }
+@media (max-width: 640px) {
+  .site-footer__top { grid-template-columns: 1fr 1fr; }
+}
 
 /* 관리자 레이아웃 */
 .admin-shell { display: flex; min-height: 100%; }

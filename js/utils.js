@@ -196,6 +196,47 @@ async function deleteHeroBanner(id) {
   if (error) throw error;
 }
 
+// ── 1:1 문의하기 ──────────────────────────────────
+function mapInquiryRow(row) {
+  return {
+    id: row.id,
+    type: row.type,
+    title: row.title,
+    content: row.content,
+    status: row.status,
+    answer: row.answer,
+    answeredAt: row.answered_at,
+    createdAt: row.created_at,
+  };
+}
+async function addInquiry({ type, title, content }) {
+  const user = await getCurrentUser();
+  if (!user) throw new Error('로그인이 필요합니다.');
+  const { error } = await sb.from('inquiries').insert({ customer_id: user.uid, type, title, content });
+  if (error) throw error;
+}
+async function getMyInquiries() {
+  const user = await getCurrentUser();
+  if (!user) return [];
+  const { data, error } = await sb.from('inquiries').select('*').eq('customer_id', user.uid).order('created_at', { ascending: false });
+  if (error) throw error;
+  return data.map(mapInquiryRow);
+}
+async function getAllInquiries() {
+  const { data, error } = await sb.from('inquiries').select('*').order('created_at', { ascending: false });
+  if (error) throw error;
+  return data.map(mapInquiryRow);
+}
+async function getInquiryById(id) {
+  const { data, error } = await sb.from('inquiries').select('*').eq('id', id).maybeSingle();
+  if (error) throw error;
+  return data ? mapInquiryRow(data) : null;
+}
+async function answerInquiry(id, answer) {
+  const { error } = await sb.from('inquiries').update({ answer, status: 'answered', answered_at: new Date().toISOString() }).eq('id', id);
+  if (error) throw error;
+}
+
 // ── 오늘의 추천 원두 (관리자가 직접 선택, 없으면 index.js에서 날짜로 자동 선택) ──
 async function getFeaturedBeanId() {
   const { data } = await sb.from('app_settings').select('value').eq('key', 'featured_bean_id').maybeSingle();
@@ -696,10 +737,55 @@ function initDesktopNav() {
   else topbar.append(nav);
 }
 
+// ── 공통 푸터 (고객 페이지 전용, 매 페이지 자동 삽입) ──
+function initFooter() {
+  if (!document.querySelector('.bottomnav') || document.querySelector('.site-footer')) return;
+  const footer = document.createElement('footer');
+  footer.className = 'site-footer';
+  footer.innerHTML = `
+    <div class="site-footer__top">
+      <div>
+        <div class="site-footer__brand">해피해피 용's 카페</div>
+        <p class="site-footer__info">대표자 : 김용대<br />사업자등록번호 : 123-45-67890<br />주소 : 서울특별시 성동구 카페거리 12길 8</p>
+        <div class="site-footer__sns">
+          <a href="#" aria-label="인스타그램">IG</a>
+          <a href="#" aria-label="페이스북">FB</a>
+          <a href="#" aria-label="카카오톡 채널">TALK</a>
+        </div>
+      </div>
+      <div class="site-footer__col">
+        <h4>고객센터</h4>
+        <a href="tel:0212345678">02-1234-5678</a>
+        <a href="mailto:hello@happyhappy-cafe.com">hello@happyhappy-cafe.com</a>
+        <p>운영시간 09:00–21:00</p>
+      </div>
+      <div class="site-footer__col">
+        <h4>바로가기</h4>
+        <a href="/faq/">FAQ</a>
+        <a href="/contact/">1:1 문의</a>
+      </div>
+      <div class="site-footer__col">
+        <h4>정책</h4>
+        <a href="/policy/privacy.html">개인정보처리방침</a>
+        <a href="/policy/terms.html">이용약관</a>
+      </div>
+    </div>
+    <div class="site-footer__bottom">
+      <span>© 2026 해피해피 용's 카페. All rights reserved.</span>
+      <div class="site-footer__legal">
+        <a href="/policy/privacy.html">개인정보처리방침</a>
+        <a href="/policy/terms.html">이용약관</a>
+      </div>
+    </div>
+  `;
+  document.body.append(footer);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   renderCartBadge();
   initIcons();
   initTheme();
   initDesktopNav();
+  initFooter();
   guardAdmin();
 });

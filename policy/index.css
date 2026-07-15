@@ -1,0 +1,5 @@
+.policy-doc { padding: var(--space-4) 0 var(--space-6); }
+.policy-doc > p:first-child { color: var(--color-text-muted); font-size: 0.85rem; margin-bottom: var(--space-5); padding-bottom: var(--space-4); border-bottom: 1px solid var(--color-border); }
+.policy-doc h2 { font-family: var(--font-display); font-size: 1.05rem; font-weight: 600; margin: var(--space-5) 0 var(--space-2); }
+.policy-doc p { font-size: 0.88rem; color: var(--color-text-muted); line-height: 1.6; }
+.policy-doc a { color: var(--color-brown-700); font-weight: 600; }
