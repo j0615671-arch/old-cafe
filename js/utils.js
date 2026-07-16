@@ -851,7 +851,7 @@ function initFooter() {
     <div class="site-footer__top">
       <div>
         <div class="site-footer__brand">해피해피 용's 카페</div>
-        <p class="site-footer__info">대표자 : 김용대<br />사업자등록번호 : 123-45-67890<br />주소 : 서울특별시 성동구 카페거리 12길 8</p>
+        <p class="site-footer__info">대표자 : 이재용<br />사업자등록번호 : 123-45-67890<br />주소 : 서울특별시 성동구 카페거리 12길 8</p>
         <div class="site-footer__sns">
           <a href="#" aria-label="인스타그램">IG</a>
           <a href="#" aria-label="페이스북">FB</a>
