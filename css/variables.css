@@ -87,12 +87,12 @@ body {
 }
 /* 라틴/숫자가 섞인 표제·가격에는 세리프가 자동으로 얹히고, 한글은 --font-sans로 폴백됨 */
 h1, h2, h3, .section-title,
-.menu-row__price, .menu-card__price, .menu-item__price, .bean-item__price, .stat-box__value,
+.menu-line__price, .menu-card__price, .menu-item__price, .bean-item__price, .stat-box__value,
 .cart-item__price, .order-item__price, .order-total, .order-card__total, .order-row__total,
 .detail-info__price, .detail-card__price {
   font-family: var(--font-display);
 }
-.menu-row__price, .menu-item__price, .stat-box__value, .cart-item__price, .order-item__price,
+.menu-line__price, .menu-item__price, .stat-box__value, .cart-item__price, .order-item__price,
 .order-total, .order-card__total, .order-row__total, .detail-info__price, .detail-card__price {
   font-variant-numeric: tabular-nums;
 }
@@ -304,24 +304,29 @@ h1, h2, h3, .section-title,
   background: var(--color-surface);
 }
 
-/* 메뉴 목록 — 이미지 중심 그리드 (menus/list) */
-.menu-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-5) var(--space-4); padding: var(--space-4) 0 var(--space-6); }
-.menu-row {
+/* 메뉴 목록 — 세로 리스트, 사진+이름+가격+설명+태그 (menus/list, 카카오맵 플레이스 메뉴판 참고) */
+.menu-list { padding: var(--space-2) 0 var(--space-6); }
+.menu-line-list__head { font-family: var(--font-display); font-weight: 600; font-size: 1rem; color: var(--color-brown-900); padding: var(--space-3) 0; }
+.menu-line-list__head span { color: var(--color-text-muted); font-weight: 400; font-size: 0.85rem; margin-left: 4px; }
+.menu-line {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  gap: var(--space-4);
+  padding: var(--space-4) 0;
+  border-top: 1px solid var(--color-border);
   cursor: pointer;
 }
-.menu-row.is-soldout { opacity: 0.5; }
-.menu-row__photo { width: 100%; aspect-ratio: 4 / 3; border-radius: var(--radius-md); object-fit: cover; margin-bottom: var(--space-2); }
-.menu-row__body { flex: 1; min-width: 0; }
-.menu-row__cat { font-family: var(--font-display); font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; color: var(--color-brown-700); text-transform: uppercase; }
-.menu-row__name { font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; margin-top: 3px; }
-.menu-row__desc { font-size: 0.82rem; color: var(--color-text-muted); margin-top: 4px; line-height: 1.5; }
-.menu-row__rating { font-size: 0.78rem; color: var(--color-warning); margin-top: 4px; }
-.menu-row__price { font-weight: 600; margin-top: var(--space-2); display: block; }
+.menu-line.is-soldout { opacity: 0.5; }
+.menu-line__photo { width: 84px; height: 84px; flex-shrink: 0; border-radius: var(--radius-md); object-fit: cover; }
+.menu-line__body { flex: 1; min-width: 0; }
+.menu-line__badge { display: flex; align-items: center; gap: 4px; font-size: 0.72rem; font-weight: 700; color: var(--color-brown-700); margin-bottom: 4px; }
+.menu-line__badge .icon { width: 13px; height: 13px; }
+.menu-line__name { font-family: var(--font-display); font-weight: 600; font-size: 1.02rem; }
+.menu-line__price { font-weight: 700; margin-top: 2px; }
+.menu-line__desc { font-size: 0.82rem; color: var(--color-text-muted); margin-top: 4px; line-height: 1.5; }
+.menu-line__tags { display: flex; flex-wrap: wrap; gap: 0 8px; margin-top: 4px; }
+.menu-line__tags span { font-size: 0.74rem; color: var(--color-text-muted); }
 @media (min-width: 1024px) {
-  .menu-list { grid-template-columns: repeat(4, 1fr); gap: var(--space-5); }
+  .menu-line__photo { width: 96px; height: 96px; }
 }
 
 /* 공통: 시안 목업의 eyebrow / section-head (홈 화면 시그니처 섹션에서 사용) */

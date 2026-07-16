@@ -19,6 +19,14 @@ function matchesSearch(menu, term) {
     .every((word) => haystack.includes(word));
 }
 
+function menuTagsHtml(m, rating) {
+  const tags = [];
+  if (rating) tags.push(`★ ${rating.avg.toFixed(1)} (${rating.count})`);
+  if (m.nutrition?.caffeine) tags.push(`카페인 ${m.nutrition.caffeine}mg`);
+  if (!tags.length) return '';
+  return `<div class="menu-line__tags">${tags.map((t) => `<span>${t}</span>`).join('')}</div>`;
+}
+
 async function renderMenuGrid() {
   const [menus, ratingSummaries] = await Promise.all([getMenus(), getRatingSummaries()]);
   const filtered = menus.filter((m) => activeCategory === 'all' || m.category === activeCategory).filter((m) => matchesSearch(m, searchTerm));
@@ -27,22 +35,24 @@ async function renderMenuGrid() {
     grid.innerHTML = `<div class="empty-state"><div class="empty-state__icon">${renderIcon('menu')}</div><p>검색 결과가 없습니다.</p></div>`;
     return;
   }
-  grid.innerHTML = filtered
-    .map((m) => {
-      const rating = ratingSummaries[m.id];
-      return `
-    <div class="menu-row ${m.soldOut ? 'is-soldout' : ''}" data-id="${m.id}">
-      <img class="menu-row__photo" src="${m.image}" alt="${m.name}" loading="lazy" />
-      <div class="menu-row__body">
-        <div class="menu-row__cat">${m.category}</div>
-        <div class="menu-row__name">${m.name}</div>
-        <div class="menu-row__desc">${m.description}</div>
-        ${rating ? `<div class="menu-row__rating">★ ${rating.avg.toFixed(1)} (${rating.count})</div>` : ''}
+  grid.innerHTML = `
+    <div class="menu-line-list__head">메뉴 <span>${filtered.length}</span></div>
+    ${filtered
+      .map((m) => {
+        const rating = ratingSummaries[m.id];
+        return `
+    <div class="menu-line ${m.soldOut ? 'is-soldout' : ''}" data-id="${m.id}">
+      <img class="menu-line__photo" src="${m.image}" alt="${m.name}" loading="lazy" />
+      <div class="menu-line__body">
+        ${m.featured ? `<div class="menu-line__badge">${renderIcon('star')}<span>추천 메뉴</span></div>` : ''}
+        <div class="menu-line__name">${m.name}</div>
+        <div class="menu-line__price">${m.soldOut ? '<span class="badge badge-soldout">품절</span>' : formatPrice(m.price)}</div>
+        <div class="menu-line__desc">${m.description}</div>
+        ${menuTagsHtml(m, rating)}
       </div>
-      ${m.soldOut ? '<span class="badge badge-soldout">품절</span>' : `<div class="menu-row__price">${formatPrice(m.price)}</div>`}
     </div>`;
-    })
-    .join('');
+      })
+      .join('')}`;
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -67,7 +77,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   document.getElementById('menuGrid').addEventListener('click', (e) => {
-    const row = e.target.closest('.menu-row');
+    const row = e.target.closest('.menu-line');
     if (row) location.href = `detail?id=${row.dataset.id}`;
   });
 });
