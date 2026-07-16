@@ -430,7 +430,7 @@ async function getCurrentUser() {
   if (!user) return null;
   const { data: profile } = await sb
     .from('profiles')
-    .select('username, name, phone, is_admin, mileage_balance, subscribed_until')
+    .select('username, name, phone, is_admin, mileage_balance, subscribed_until, created_at')
     .eq('id', user.id)
     .single();
   if (!profile) return null;
@@ -444,7 +444,21 @@ async function getCurrentUser() {
     mileageBalance: profile.mileage_balance,
     subscribedUntil: profile.subscribed_until,
     isSubscribed: !!profile.subscribed_until && new Date(profile.subscribed_until) > new Date(),
+    createdAt: profile.created_at,
   };
+}
+async function updateMyProfile({ name, phone }) {
+  const { error } = await sb.rpc('update_my_profile', { p_name: name, p_phone: phone });
+  if (error) throw error;
+}
+async function changePassword(currentPassword, newPassword) {
+  const user = await getCurrentUser();
+  if (!user) return { error: '로그인이 필요합니다.' };
+  const { error: verifyError } = await sb.auth.signInWithPassword({ email: user.email, password: currentPassword });
+  if (verifyError) return { error: '현재 비밀번호가 올바르지 않습니다.' };
+  const { error } = await sb.auth.updateUser({ password: newPassword });
+  if (error) return { error: error.message };
+  return { success: true };
 }
 // 구독 회원은 10% 할인 (SUBSCRIPTION_DISCOUNT_RATE, js/data.js와 값 맞춰야 함)
 function applySubscriptionDiscount(user, total) {

@@ -1,0 +1,5 @@
+.form-card { max-width: 420px; padding: var(--space-5); margin-bottom: var(--space-4); }
+.form-card__title { font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; color: var(--color-brown-900); margin-bottom: var(--space-4); }
+.form-error { color: var(--color-danger); font-size: 0.85rem; margin-bottom: var(--space-3); min-height: 1.2em; }
+.form-feedback { color: var(--color-success); font-size: 0.85rem; margin-bottom: var(--space-3); min-height: 1.2em; }
+#username, #email, #createdAt { background: var(--color-cream); color: var(--color-text-muted); }
