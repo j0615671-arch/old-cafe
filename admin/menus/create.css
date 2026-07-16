@@ -2,3 +2,8 @@ h1 { font-size: 1.4rem; color: var(--color-brown-900); margin-bottom: var(--spac
 .form-card { max-width: 420px; padding: var(--space-5); }
 .field-checkbox label { display: flex; align-items: center; gap: var(--space-2); font-weight: 400; }
 .image-preview { width: 100px; height: 100px; object-fit: cover; border-radius: var(--radius-sm); margin: var(--space-2) 0; border: 1px solid var(--color-border); }
+fieldset.field { border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: var(--space-3); margin: 0; }
+fieldset.field legend { font-size: 0.85rem; font-weight: 600; color: var(--color-brown-700); padding: 0 var(--space-2); }
+.nutrition-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2) var(--space-3); }
+.nutrition-grid label { display: flex; flex-direction: column; gap: 4px; font-size: 0.8rem; color: var(--color-text-muted); }
+.nutrition-grid input { width: 100%; }

@@ -17,6 +17,7 @@ async function render() {
       </div>
       <div class="order-card__summary">${o.items.map((i) => `${i.name} x${i.qty}`).join(', ')}</div>
       <div class="order-card__total">${formatPrice(o.total)}</div>
+      <button type="button" class="btn btn-secondary btn-sm order-card__reorder" data-reorder-id="${o.id}">다시 담기</button>
     </div>`
     )
     .join('');
@@ -25,7 +26,17 @@ async function render() {
 document.addEventListener('DOMContentLoaded', async () => {
   await render();
 
-  document.getElementById('orderList').addEventListener('click', (e) => {
+  document.getElementById('orderList').addEventListener('click', async (e) => {
+    const reorderBtn = e.target.closest('[data-reorder-id]');
+    if (reorderBtn) {
+      e.stopPropagation();
+      const order = (await getOrders()).find((o) => o.id === reorderBtn.dataset.reorderId);
+      if (order) {
+        reorder(order);
+        location.href = '../basket/list.html';
+      }
+      return;
+    }
     const card = e.target.closest('.order-card');
     if (card) location.href = `detail?id=${card.dataset.id}`;
   });
@@ -33,6 +44,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   const user = await getCurrentUser();
   if (!user) return;
   sb.channel('orders-list-changes')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'orders', filter: `customer_id=eq.${user.uid}` }, render)
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'orders', filter: `customer_id=eq.${user.uid}` }, render)
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders', filter: `customer_id=eq.${user.uid}` }, (payload) => {
+      notifyOrderStatus(payload.new.status);
+      render();
+    })
     .subscribe();
 });

@@ -291,6 +291,7 @@ h1, h2, h3, .section-title,
 .menu-row__cat { font-family: var(--font-display); font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; color: var(--color-brown-700); text-transform: uppercase; }
 .menu-row__name { font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; margin-top: 3px; }
 .menu-row__desc { font-size: 0.82rem; color: var(--color-text-muted); margin-top: 4px; line-height: 1.5; }
+.menu-row__rating { font-size: 0.78rem; color: var(--color-warning); margin-top: 4px; }
 .menu-row__price { font-weight: 600; margin-top: var(--space-2); display: block; }
 @media (min-width: 1024px) {
   .menu-list { grid-template-columns: repeat(4, 1fr); gap: var(--space-5); }

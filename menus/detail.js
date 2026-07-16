@@ -80,6 +80,95 @@ function updatePriceDisplay(menu) {
   document.getElementById('priceValue').textContent = formatPrice(unitPrice * qty);
 }
 
+function nutritionHtml(menu) {
+  if (!menu.nutrition) return '';
+  const rows = NUTRITION_FIELDS.map(([key]) => key)
+    .filter((key) => menu.nutrition[key] !== null && menu.nutrition[key] !== undefined && menu.nutrition[key] !== '')
+    .map((key) => `<div class="nutrition-row"><span>${NUTRITION_LABELS[key] || key}</span><span>${menu.nutrition[key]}${NUTRITION_UNITS[key] || ''}</span></div>`)
+    .join('');
+  return rows ? `<div class="detail-nutrition"><div class="detail-nutrition__title">영양정보 (1인분 기준)</div>${rows}</div>` : '';
+}
+function originHtml(menu) {
+  return menu.origin ? `<div class="detail-origin">원산지: ${menu.origin}</div>` : '';
+}
+
+function starHtml(rating) {
+  return [1, 2, 3, 4, 5].map((n) => `<span class="star ${n <= rating ? 'is-filled' : ''}" data-star="${n}">★</span>`).join('');
+}
+
+async function renderReviews(menuId) {
+  const container = document.getElementById('reviewsSection');
+  const [reviews, myReview, user] = await Promise.all([getMenuReviews(menuId), getMyReview(menuId), getCurrentUser()]);
+  const avg = reviews.length ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1) : null;
+
+  const listHtml = reviews.length
+    ? reviews
+        .map(
+          (r) => `
+      <div class="review-item">
+        <div class="review-item__head">
+          <span class="review-item__stars">${starHtml(r.rating)}</span>
+          <span class="review-item__author">${r.authorName}</span>
+          <span class="review-item__date">${formatDate(r.createdAt)}</span>
+        </div>
+        ${r.content ? `<p class="review-item__content">${r.content}</p>` : ''}
+      </div>`
+        )
+        .join('')
+    : `<p class="review-empty">아직 리뷰가 없습니다. 첫 리뷰를 남겨보세요!</p>`;
+
+  container.innerHTML = `
+    <div class="reviews-head">
+      <span class="reviews-title">리뷰</span>
+      ${avg ? `<span class="reviews-avg">${starHtml(Math.round(avg))} ${avg} (${reviews.length}개)</span>` : ''}
+    </div>
+    ${
+      user
+        ? `
+    <form id="reviewForm" class="review-form">
+      <div class="review-form__stars" id="reviewStars">${starHtml(myReview?.rating || 0)}</div>
+      <textarea id="reviewContent" placeholder="솔직한 후기를 남겨주세요 (선택)">${myReview?.content || ''}</textarea>
+      <div class="review-form__actions">
+        <button type="submit" class="btn btn-primary btn-sm">${myReview ? '리뷰 수정' : '리뷰 등록'}</button>
+        ${myReview ? `<button type="button" id="deleteReviewBtn" class="btn btn-secondary btn-sm">삭제</button>` : ''}
+      </div>
+    </form>`
+        : `<p class="review-login-hint"><a href="../auth/login.html">로그인</a> 후 리뷰를 남길 수 있어요.</p>`
+    }
+    <div class="review-list">${listHtml}</div>
+  `;
+
+  if (!user) return;
+
+  let selectedRating = myReview?.rating || 0;
+  const starsEl = document.getElementById('reviewStars');
+  starsEl.addEventListener('click', (e) => {
+    const star = e.target.closest('[data-star]');
+    if (!star) return;
+    selectedRating = Number(star.dataset.star);
+    starsEl.innerHTML = starHtml(selectedRating);
+  });
+
+  document.getElementById('reviewForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!selectedRating) {
+      alert('별점을 선택해주세요.');
+      return;
+    }
+    await upsertReview(menuId, selectedRating, document.getElementById('reviewContent').value.trim());
+    await renderReviews(menuId);
+  });
+
+  const deleteBtn = document.getElementById('deleteReviewBtn');
+  if (deleteBtn) {
+    deleteBtn.addEventListener('click', async () => {
+      if (!myReview) return;
+      await deleteReview(myReview.id);
+      await renderReviews(menuId);
+    });
+  }
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   const id = getQueryParam('id');
   const menu = id && (await getMenuById(id));
@@ -98,6 +187,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       <div class="detail-info__name">${menu.name} ${menu.soldOut ? '<span class="badge badge-soldout">품절</span>' : ''}</div>
       <div class="detail-info__price" id="priceValue">${formatPrice(menu.price)}</div>
       <p class="detail-info__desc">${menu.description}</p>
+      ${originHtml(menu)}
+      ${nutritionHtml(menu)}
       ${optionsHtml}
       <div class="qty-control">
         <button id="qtyMinus" ${menu.soldOut ? 'disabled' : ''}>−</button>
@@ -109,7 +200,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       </button>
       <div class="add-feedback" id="addFeedback"></div>
     </div>
+    <div class="card" id="reviewsSection" style="padding: var(--space-4); margin-top: var(--space-3);"></div>
   `;
+
+  renderReviews(menu.id);
 
   if (menu.soldOut) return;
 

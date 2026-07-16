@@ -34,7 +34,13 @@ async function render(order) {
       ${itemRows}
       <div class="order-total"><span>총 결제금액</span><span>${formatPrice(order.total)}</span></div>
     </div>
+    <button id="reorderBtn" class="btn btn-secondary btn-block" style="margin-top: var(--space-4);">이 주문 다시 담기</button>
   `;
+
+  document.getElementById('reorderBtn').addEventListener('click', () => {
+    reorder(order);
+    location.href = '../basket/list.html';
+  });
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -44,7 +50,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (!id || !order) return;
 
   sb.channel(`order-detail-${id}`)
-    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders', filter: `id=eq.${id}` }, async () => {
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders', filter: `id=eq.${id}` }, async (payload) => {
+      notifyOrderStatus(payload.new.status);
       render(await getOrderById(id));
     })
     .subscribe();

@@ -48,6 +48,21 @@
         <label for="description">설명</label>
         <textarea id="description" name="description" required></textarea>
       </div>
+      <div class="field">
+        <label for="origin">원산지 (선택, 예: 밀가루-미국산, 우유-국내산)</label>
+        <input id="origin" name="origin" type="text" />
+      </div>
+      <fieldset class="field">
+        <legend>영양성분 (선택, 1인분 기준)</legend>
+        <div class="nutrition-grid">
+          <label>열량(kcal) <input id="nutCalories" type="number" min="0" onwheel="this.blur()" /></label>
+          <label>당류(g) <input id="nutSugar" type="number" min="0" onwheel="this.blur()" /></label>
+          <label>단백질(g) <input id="nutProtein" type="number" min="0" onwheel="this.blur()" /></label>
+          <label>포화지방(g) <input id="nutSaturatedFat" type="number" min="0" onwheel="this.blur()" /></label>
+          <label>나트륨(mg) <input id="nutSodium" type="number" min="0" onwheel="this.blur()" /></label>
+          <label>카페인(mg) <input id="nutCaffeine" type="number" min="0" onwheel="this.blur()" /></label>
+        </div>
+      </fieldset>
       <div class="field field-checkbox">
         <label><input id="soldOut" name="soldOut" type="checkbox" /> 품절</label>
       </div>

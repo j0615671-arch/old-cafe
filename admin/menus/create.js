@@ -31,6 +31,8 @@ document.addEventListener('DOMContentLoaded', () => {
       description: form.description.value.trim(),
       soldOut: form.soldOut.checked,
       featured: form.featured.checked,
+      origin: document.getElementById('origin').value.trim() || null,
+      nutrition: readNutritionFields(),
     });
     location.href = 'list.html';
   });

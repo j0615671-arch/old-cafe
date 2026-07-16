@@ -20,27 +20,28 @@ function matchesSearch(menu, term) {
 }
 
 async function renderMenuGrid() {
-  const menus = (await getMenus())
-    .filter((m) => activeCategory === 'all' || m.category === activeCategory)
-    .filter((m) => matchesSearch(m, searchTerm));
+  const [menus, ratingSummaries] = await Promise.all([getMenus(), getRatingSummaries()]);
+  const filtered = menus.filter((m) => activeCategory === 'all' || m.category === activeCategory).filter((m) => matchesSearch(m, searchTerm));
   const grid = document.getElementById('menuGrid');
-  if (!menus.length) {
+  if (!filtered.length) {
     grid.innerHTML = `<div class="empty-state"><div class="empty-state__icon">${renderIcon('menu')}</div><p>검색 결과가 없습니다.</p></div>`;
     return;
   }
-  grid.innerHTML = menus
-    .map(
-      (m) => `
+  grid.innerHTML = filtered
+    .map((m) => {
+      const rating = ratingSummaries[m.id];
+      return `
     <div class="menu-row ${m.soldOut ? 'is-soldout' : ''}" data-id="${m.id}">
       <img class="menu-row__photo" src="${m.image}" alt="${m.name}" loading="lazy" />
       <div class="menu-row__body">
         <div class="menu-row__cat">${m.category}</div>
         <div class="menu-row__name">${m.name}</div>
         <div class="menu-row__desc">${m.description}</div>
+        ${rating ? `<div class="menu-row__rating">★ ${rating.avg.toFixed(1)} (${rating.count})</div>` : ''}
       </div>
       ${m.soldOut ? '<span class="badge badge-soldout">품절</span>' : `<div class="menu-row__price">${formatPrice(m.price)}</div>`}
-    </div>`
-    )
+    </div>`;
+    })
     .join('');
 }
 

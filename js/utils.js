@@ -28,6 +28,31 @@ const ICONS = {
 function renderIcon(name) {
   return ICONS[name] || '';
 }
+// 관리자 메뉴 등록/수정 폼의 영양성분 6칸 <-> nutrition jsonb 변환 (비어있는 값은 저장하지 않음)
+const NUTRITION_FIELDS = [
+  ['calories', 'nutCalories'],
+  ['sugar', 'nutSugar'],
+  ['protein', 'nutProtein'],
+  ['saturatedFat', 'nutSaturatedFat'],
+  ['sodium', 'nutSodium'],
+  ['caffeine', 'nutCaffeine'],
+];
+function readNutritionFields() {
+  const nutrition = {};
+  NUTRITION_FIELDS.forEach(([key, inputId]) => {
+    const value = document.getElementById(inputId).value;
+    if (value !== '') nutrition[key] = Number(value);
+  });
+  return Object.keys(nutrition).length ? nutrition : null;
+}
+function fillNutritionFields(nutrition) {
+  NUTRITION_FIELDS.forEach(([key, inputId]) => {
+    document.getElementById(inputId).value = nutrition?.[key] ?? '';
+  });
+}
+const NUTRITION_LABELS = { calories: '열량', sugar: '당류', protein: '단백질', saturatedFat: '포화지방', sodium: '나트륨', caffeine: '카페인' };
+const NUTRITION_UNITS = { calories: 'kcal', sugar: 'g', protein: 'g', saturatedFat: 'g', sodium: 'mg', caffeine: 'mg' };
+
 function initIcons() {
   document.querySelectorAll('[data-icon]').forEach((el) => {
     el.insertAdjacentHTML('afterbegin', renderIcon(el.dataset.icon));
@@ -52,7 +77,18 @@ function getQueryParam(name) {
 }
 
 function mapMenuRow(row) {
-  return { id: row.id, name: row.name, category: row.category, price: row.price, image: row.image, description: row.description, soldOut: row.sold_out, featured: row.featured };
+  return {
+    id: row.id,
+    name: row.name,
+    category: row.category,
+    price: row.price,
+    image: row.image,
+    description: row.description,
+    soldOut: row.sold_out,
+    featured: row.featured,
+    nutrition: row.nutrition,
+    origin: row.origin,
+  };
 }
 function mapBeanRow(row) {
   return { id: row.id, name: row.name, origin: row.origin, image: row.image, note: row.note, menuId: row.menu_id };
@@ -76,7 +112,17 @@ async function getMenuById(id) {
 async function addMenu(menu) {
   const { data, error } = await sb
     .from('menus')
-    .insert({ name: menu.name, category: menu.category, price: menu.price, image: menu.image, description: menu.description, sold_out: !!menu.soldOut, featured: !!menu.featured })
+    .insert({
+      name: menu.name,
+      category: menu.category,
+      price: menu.price,
+      image: menu.image,
+      description: menu.description,
+      sold_out: !!menu.soldOut,
+      featured: !!menu.featured,
+      nutrition: menu.nutrition || null,
+      origin: menu.origin || null,
+    })
     .select()
     .single();
   if (error) throw error;
@@ -92,6 +138,8 @@ async function updateMenu(id, patch) {
   if ('description' in patch) dbPatch.description = patch.description;
   if ('soldOut' in patch) dbPatch.sold_out = patch.soldOut;
   if ('featured' in patch) dbPatch.featured = patch.featured;
+  if ('nutrition' in patch) dbPatch.nutrition = patch.nutrition;
+  if ('origin' in patch) dbPatch.origin = patch.origin;
   const { data, error } = await sb.from('menus').update(dbPatch).eq('id', id).select().maybeSingle();
   if (error) throw error;
   _menusCache = null;
@@ -236,6 +284,49 @@ async function getInquiryById(id) {
 async function answerInquiry(id, answer) {
   const { error } = await sb.from('inquiries').update({ answer, status: 'answered', answered_at: new Date().toISOString() }).eq('id', id);
   if (error) throw error;
+}
+
+// ── 메뉴 리뷰/별점 (로그인 회원 1인당 메뉴별 1개, 재작성 시 upsert) ──
+function mapReviewRow(row) {
+  return { id: row.id, menuId: row.menu_id, customerId: row.customer_id, rating: row.rating, content: row.content, createdAt: row.created_at };
+}
+async function getMenuReviews(menuId) {
+  const { data, error } = await sb.from('reviews').select('*, profiles(name)').eq('menu_id', menuId).order('created_at', { ascending: false });
+  if (error) throw error;
+  return data.map((row) => ({ ...mapReviewRow(row), authorName: row.profiles?.name || '익명' }));
+}
+async function getMyReview(menuId) {
+  const user = await getCurrentUser();
+  if (!user) return null;
+  const { data, error } = await sb.from('reviews').select('*').eq('menu_id', menuId).eq('customer_id', user.uid).maybeSingle();
+  if (error) throw error;
+  return data ? mapReviewRow(data) : null;
+}
+async function upsertReview(menuId, rating, content) {
+  const user = await getCurrentUser();
+  if (!user) throw new Error('로그인이 필요합니다.');
+  const { error } = await sb
+    .from('reviews')
+    .upsert({ menu_id: menuId, customer_id: user.uid, rating, content, updated_at: new Date().toISOString() }, { onConflict: 'menu_id,customer_id' });
+  if (error) throw error;
+}
+async function deleteReview(id) {
+  const { error } = await sb.from('reviews').delete().eq('id', id);
+  if (error) throw error;
+}
+// 메뉴 목록에 별점 배지를 달기 위한 메뉴별 평균/개수 (한 번에 조회)
+async function getRatingSummaries() {
+  const { data, error } = await sb.from('reviews').select('menu_id, rating');
+  if (error) throw error;
+  const byMenu = {};
+  data.forEach((r) => {
+    (byMenu[r.menu_id] ||= []).push(r.rating);
+  });
+  const summaries = {};
+  Object.entries(byMenu).forEach(([menuId, ratings]) => {
+    summaries[menuId] = { avg: ratings.reduce((a, b) => a + b, 0) / ratings.length, count: ratings.length };
+  });
+  return summaries;
 }
 
 // ── 오늘의 추천 원두 (관리자가 직접 선택, 없으면 index.js에서 날짜로 자동 선택) ──
@@ -521,6 +612,18 @@ async function updateOrderStatus(id, status) {
   const { data, error } = await sb.from('orders').update({ status }).eq('id', id).select().maybeSingle();
   if (error) throw error;
   return data ? mapOrderRow(data) : null;
+}
+// 지난 주문을 그대로 장바구니에 다시 담기
+function reorder(order) {
+  order.items.forEach((i) => addToCart(i.menuId, i.qty, i.options));
+}
+// 주문 상태 변경을 브라우저 알림으로 (주문 내역 페이지에서 실시간 구독과 함께 사용)
+function notifyOrderStatus(status) {
+  if (!('Notification' in window)) return;
+  const body = STATUS_FRIENDLY_MESSAGE[status] || status;
+  const show = () => new Notification("해피해피 용's 카페", { body });
+  if (Notification.permission === 'granted') show();
+  else if (Notification.permission !== 'denied') Notification.requestPermission().then((p) => p === 'granted' && show());
 }
 // ── 주문 상태 진행 막대 (관리자·고객 화면 공통) ──────
 function nextOrderStatus(status) {

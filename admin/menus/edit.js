@@ -17,6 +17,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   form.description.value = menu.description;
   form.soldOut.checked = menu.soldOut;
   form.featured.checked = !!menu.featured;
+  document.getElementById('origin').value = menu.origin || '';
+  fillNutritionFields(menu.nutrition);
 
   const preview = document.getElementById('imagePreview');
   function showPreview(src) {
@@ -46,6 +48,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       description: form.description.value.trim(),
       soldOut: form.soldOut.checked,
       featured: form.featured.checked,
+      origin: document.getElementById('origin').value.trim() || null,
+      nutrition: readNutritionFields(),
     });
     location.href = `detail?id=${menu.id}`;
   });
