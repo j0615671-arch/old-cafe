@@ -23,6 +23,7 @@ const ICONS = {
   wallet: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7H4a1 1 0 0 0-1 1v9a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-3"/><path d="M3 8V6a2 2 0 0 1 2-2h11v4"/><path d="M17 13h4v3h-4a1.5 1.5 0 0 1 0-3Z"/></svg>',
   star: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 14.7 9l6 .9-4.4 4.2 1 6-5.3-2.8-5.3 2.8 1-6L3.3 9.9l6-.9Z"/></svg>',
   users: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+  mail: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>',
 };
 function renderIcon(name) {
   return ICONS[name] || '';
@@ -258,6 +259,7 @@ function getUnitPrice(menu, options = {}) {
 async function formatOptions(options) {
   if (!options) return '';
   const parts = [];
+  if (options.orderType) parts.push(ORDER_TYPE_OPTIONS.find((o) => o.id === options.orderType)?.name);
   if (options.bean) {
     const bean = await getBeanById(options.bean);
     if (bean) parts.push(`${bean.origin} 원두`);

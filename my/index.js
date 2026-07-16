@@ -72,5 +72,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (user) {
     const unusedCoupons = (await getCoupons()).filter((c) => c.status === 'unused').length;
     if (unusedCoupons > 0) document.getElementById('couponCount').textContent = `${unusedCoupons}장`;
+
+    const inquiries = await getMyInquiries();
+    if (inquiries.length) document.getElementById('inquiryCount').textContent = `${inquiries.length}건`;
   }
 });

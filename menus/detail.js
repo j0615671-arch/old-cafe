@@ -3,7 +3,16 @@ let selected = {};
 
 async function optionGroupsHtml(menu) {
   const opts = MENU_OPTIONS[menu.category] || {};
-  let html = '';
+  selected.orderType = 'takeout';
+  let html = `
+      <div class="option-group">
+        <div class="option-group__label">이용 방법</div>
+        <div class="option-chips" data-option="orderType">
+          ${ORDER_TYPE_OPTIONS.map(
+            (o) => `<button type="button" class="option-chip ${o.id === 'takeout' ? 'is-active' : ''}" data-value="${o.id}">${o.name}</button>`
+          ).join('')}
+        </div>
+      </div>`;
 
   if (opts.bean) {
     const beans = await getBeans();

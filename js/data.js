@@ -27,6 +27,12 @@ const MENU_OPTIONS = {
   ade: { size: true },
 };
 
+// 매장/포장은 카테고리 상관없이 모든 메뉴에 공통으로 붙는 선택지
+const ORDER_TYPE_OPTIONS = [
+  { id: 'takeout', name: '포장' },
+  { id: 'dinein', name: '매장' },
+];
+
 const SIZE_OPTIONS = [
   { id: 'tall', name: '톨', priceDelta: 0 },
   { id: 'medium', name: '미디움', priceDelta: 500 },
