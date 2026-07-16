@@ -803,6 +803,8 @@ function initDesktopNav() {
   const links = [
     { href: '/', label: '홈', section: '' },
     { href: '/menus/list.html', label: '메뉴', section: 'menus', panel: navMenuPanel },
+    { href: '/faq/', label: 'FAQ', section: 'faq' },
+    { href: '/contact/', label: '1:1문의', section: 'contact' },
     { href: '/basket/list.html', label: '장바구니', section: 'basket', panel: navCartPanel },
     { href: '/orders/list.html', label: '주문내역', section: 'orders', panel: navOrdersPanel },
     { href: '/my/', label: '마이', section: 'my', panel: navMyPanel },
@@ -840,6 +842,53 @@ function initDesktopNav() {
   const actions = topbar.querySelector('.topbar__actions');
   if (actions) topbar.insertBefore(nav, actions);
   else topbar.append(nav);
+}
+
+// ── 모바일 햄버거 메뉴 (1024px 미만, 데스크톱 상단 내비 대신) ──
+function initMobileNav() {
+  const topbar = document.querySelector('.topbar');
+  if (!topbar || !document.querySelector('.bottomnav')) return; // 관리자 페이지는 제외
+
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'mobile-nav-toggle';
+  btn.setAttribute('aria-label', '전체 메뉴');
+  btn.innerHTML = renderIcon('menu');
+  topbar.insertBefore(btn, topbar.firstChild);
+
+  const drawer = document.createElement('div');
+  drawer.className = 'mobile-nav';
+  drawer.innerHTML = `
+    <div class="mobile-nav__overlay"></div>
+    <div class="mobile-nav__panel">
+      <button type="button" class="mobile-nav__close" aria-label="닫기">×</button>
+      <div class="mobile-nav__group">
+        <div class="mobile-nav__title">둘러보기</div>
+        <a href="/">홈</a>
+        <a href="/menus/list.html">메뉴</a>
+        <a href="/basket/list.html">장바구니</a>
+        <a href="/orders/list.html">주문내역</a>
+        <a href="/my/">마이페이지</a>
+      </div>
+      <div class="mobile-nav__group">
+        <div class="mobile-nav__title">고객센터</div>
+        <a href="/faq/">자주 묻는 질문</a>
+        <a href="/contact/">1:1 문의하기</a>
+      </div>
+      <div class="mobile-nav__group">
+        <div class="mobile-nav__title">정책</div>
+        <a href="/policy/privacy.html">개인정보처리방침</a>
+        <a href="/policy/terms.html">이용약관</a>
+      </div>
+    </div>
+  `;
+  document.body.append(drawer);
+
+  const close = () => drawer.classList.remove('is-open');
+  btn.addEventListener('click', () => drawer.classList.add('is-open'));
+  drawer.querySelector('.mobile-nav__overlay').addEventListener('click', close);
+  drawer.querySelector('.mobile-nav__close').addEventListener('click', close);
+  drawer.querySelectorAll('.mobile-nav__panel a').forEach((a) => a.addEventListener('click', close));
 }
 
 // ── 공통 푸터 (고객 페이지 전용, 매 페이지 자동 삽입) ──
@@ -891,6 +940,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initIcons();
   initTheme();
   initDesktopNav();
+  initMobileNav();
   initFooter();
   guardAdmin();
 });
